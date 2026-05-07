@@ -1,0 +1,344 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Dashboard | StockSync{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-modern">
+    <div class="dashboard-hero">
+        <div>
+            <span class="hero-eyebrow">Visão geral</span>
+            <h2>Resumo operacional e financeiro</h2>
+            <p>Veja rapidamente o que precisa de atenção hoje: estoque, vendas, compras, pagamentos e recebimentos.</p>
+        </div>
+
+        <div class="quick-actions">
+            <a href="{% url 'movimentacoes_estoque' %}" class="quick-action primary">
+                <i class="bi bi-plus-circle-fill"></i>
+                Nova venda/compra
+            </a>
+            <a href="{% url 'estoque' %}" class="quick-action">
+                <i class="bi bi-box-seam-fill"></i>
+                Produtos
+            </a>
+            <a href="{% url 'contas_pagar' %}" class="quick-action">
+                <i class="bi bi-cash-coin"></i>
+                Financeiro
+            </a>
+        </div>
+    </div>
+
+    <div class="kpi-grid">
+        <article class="kpi-card success">
+            <div class="kpi-icon"><i class="bi bi-arrow-down-circle-fill"></i></div>
+            <div>
+                <span>A receber hoje</span>
+                <strong>{{ receber_hoje }}</strong>
+                <small>No mês: {{ receber_mes }}</small>
+            </div>
+        </article>
+
+        <article class="kpi-card danger">
+            <div class="kpi-icon"><i class="bi bi-arrow-up-circle-fill"></i></div>
+            <div>
+                <span>A pagar hoje</span>
+                <strong>{{ pagar_hoje }}</strong>
+                <small>No mês: {{ pagar_mes }}</small>
+            </div>
+        </article>
+
+        <article class="kpi-card blue">
+            <div class="kpi-icon"><i class="bi bi-cart-check-fill"></i></div>
+            <div>
+                <span>Vendas do mês</span>
+                <strong>{{ vendas_mes }}</strong>
+                <small>Compras: {{ compras_mes }}</small>
+            </div>
+        </article>
+
+        <article class="kpi-card purple">
+            <div class="kpi-icon"><i class="bi bi-boxes"></i></div>
+            <div>
+                <span>Valor em estoque</span>
+                <strong>{{ estoque_valor }}</strong>
+                <small>{{ estoque_peso }} em {{ total_produtos }} produtos</small>
+            </div>
+        </article>
+    </div>
+
+    <div class="mini-kpi-grid">
+        <div class="mini-kpi">
+            <span>Lucro estimado</span>
+            <strong>{{ lucro_estimado }}</strong>
+            <small>Vendas - compras do mês</small>
+        </div>
+        <div class="mini-kpi warning">
+            <span>Estoque baixo</span>
+            <strong>{{ total_estoque_baixo }}</strong>
+            <small>Produtos abaixo do mínimo</small>
+        </div>
+        <div class="mini-kpi danger">
+            <span>Contas vencidas</span>
+            <strong>{{ total_contas_vencidas }}</strong>
+            <small>Pendentes/receber atrasadas</small>
+        </div>
+        <div class="mini-kpi neutral">
+            <span>Movimentações no mês</span>
+            <strong>{{ total_movimentacoes_mes }}</strong>
+            <small>Entradas, saídas, compras e vendas</small>
+        </div>
+    </div>
+
+    <div class="dashboard-content-grid">
+        <div class="dashboard-card chart-wide">
+            <div class="card-head">
+                <div>
+                    <h3>Vendas x Compras</h3>
+                    <p>Valores lançados nos últimos 7 dias.</p>
+                </div>
+            </div>
+            <div class="chart-box">
+                <canvas id="salesPurchasesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="dashboard-card chart-small">
+            <div class="card-head">
+                <div>
+                    <h3>Financeiro por status</h3>
+                    <p>Distribuição dos lançamentos.</p>
+                </div>
+            </div>
+            <div class="chart-box donut-box">
+                <canvas id="financeStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-lists-grid">
+        <div class="dashboard-card">
+            <div class="card-head">
+                <div>
+                    <h3>Produtos com estoque baixo</h3>
+                    <p>Itens que precisam de reposição.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-list">
+                {% for produto in produtos_baixo %}
+                    <div class="list-row attention">
+                        <div>
+                            <strong>{{ produto.nome }}</strong>
+                            <span>Mínimo: {{ produto.estoque_minimo }} {{ produto.unidade }}</span>
+                        </div>
+                        <b>{{ produto.quantidade_estoque }} {{ produto.unidade }}</b>
+                    </div>
+                {% empty %}
+                    <div class="empty-dashboard">Nenhum produto crítico no momento.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-head">
+                <div>
+                    <h3>Contas vencidas</h3>
+                    <p>Pagamentos/recebimentos em atraso.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-list">
+                {% for conta in contas_vencidas %}
+                    <div class="list-row danger-row">
+                        <div>
+                            <strong>{{ conta.descricao }}</strong>
+                            <span>{{ conta.fornecedor|default:'Sem pessoa vinculada' }} • {{ conta.vencimento|date:'d/m/Y' }}</span>
+                        </div>
+                        <b>R$ {{ conta.valor }}</b>
+                    </div>
+                {% empty %}
+                    <div class="empty-dashboard">Nenhuma conta vencida.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-head">
+                <div>
+                    <h3>Próximos vencimentos</h3>
+                    <p>Contas dos próximos 7 dias.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-list">
+                {% for conta in proximos_vencimentos %}
+                    <div class="list-row">
+                        <div>
+                            <strong>{{ conta.descricao }}</strong>
+                            <span>{{ conta.get_status_display }} • {{ conta.vencimento|date:'d/m/Y' }}</span>
+                        </div>
+                        <b>R$ {{ conta.valor }}</b>
+                    </div>
+                {% empty %}
+                    <div class="empty-dashboard">Nenhum vencimento nos próximos dias.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-bottom-grid">
+        <div class="dashboard-card">
+            <div class="card-head">
+                <div>
+                    <h3>Últimas movimentações</h3>
+                    <p>Histórico recente do estoque.</p>
+                </div>
+            </div>
+
+            <div class="table-responsive-dashboard">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Tipo</th>
+                            <th>Qtd.</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mov in ultimas_movimentacoes %}
+                            <tr>
+                                <td>{{ mov.produto.nome }}</td>
+                                <td><span class="movement-badge type-{{ mov.tipo }}">{{ mov.get_tipo_display }}</span></td>
+                                <td>{{ mov.quantidade }} {{ mov.produto.unidade }}</td>
+                                <td>{{ mov.data|date:'d/m/Y H:i' }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4">Nenhuma movimentação registrada.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-head">
+                <div>
+                    <h3>Produtos em destaque</h3>
+                    <p>Maiores quantidades em estoque.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-list">
+                {% for produto in produtos_destaque %}
+                    <div class="list-row product-row">
+                        <div>
+                            <strong>{{ produto.nome }}</strong>
+                            <span>{{ produto.categoria.nome }} • Custo R$ {{ produto.preco_custo }}</span>
+                        </div>
+                        <b>{{ produto.quantidade_estoque }} {{ produto.unidade }}</b>
+                    </div>
+                {% empty %}
+                    <div class="empty-dashboard">Nenhum produto cadastrado.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartLabels = {{ chart_labels|safe }};
+    const chartVendas = {{ chart_vendas|safe }};
+    const chartCompras = {{ chart_compras|safe }};
+    const chartStatusLabels = {{ chart_status_labels|safe }};
+    const chartStatusValues = {{ chart_status_values|safe }};
+
+    const moneyFormatter = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    });
+
+    const salesCanvas = document.getElementById('salesPurchasesChart');
+    if (salesCanvas) {
+        new Chart(salesCanvas, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    {
+                        label: 'Vendas',
+                        data: chartVendas,
+                        borderColor: '#16c784',
+                        backgroundColor: 'rgba(22, 199, 132, 0.12)',
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Compras',
+                        data: chartCompras,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.10)',
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: context => `${context.dataset.label}: ${moneyFormatter.format(context.raw || 0)}`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: value => moneyFormatter.format(value)
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    const statusCanvas = document.getElementById('financeStatusChart');
+    if (statusCanvas) {
+        new Chart(statusCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: chartStatusLabels,
+                datasets: [{
+                    data: chartStatusValues,
+                    backgroundColor: ['#0ea5e9', '#f97316', '#16c784', '#ef4444', '#94a3b8'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: context => `${context.label}: ${moneyFormatter.format(context.raw || 0)}`
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

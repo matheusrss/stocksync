@@ -1,0 +1,155 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Estoque | StockSync{% endblock %}
+{% block page_title %}Estoque{% endblock %}
+
+{% block content %}
+<section class="cadastro-page">
+    <div class="section-title-bar">
+        <div class="section-title-left">
+            <i class="bi bi-boxes"></i>
+            <h1>Estoque - Produtos Cadastrados</h1>
+        </div>
+    </div>
+
+    <form method="get" class="toolbar-row">
+        <div class="left-tools">
+            <div class="filter-search-group">
+                <select class="filter-select">
+                    <option>Filtrar por</option>
+                    <option>Nome</option>
+                    <option>Categoria</option>
+                    <option>Código</option>
+                </select>
+                <input type="text" name="busca" value="{{ busca }}" class="search-input-custom" placeholder="Produto...">
+                <button type="submit" class="search-btn-custom"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+
+        <div class="right-tools">
+            <button type="button" class="action-btn btn-new" data-bs-toggle="modal" data-bs-target="#modalNovoProduto">
+                <i class="bi bi-plus-lg"></i> Novo
+            </button>
+            <button type="button" class="action-btn btn-edit" id="btnEditarProduto" disabled>
+                <i class="bi bi-pencil-fill"></i> Editar
+            </button>
+            <button type="button" class="action-btn btn-delete" id="btnExcluirProduto" disabled>
+                <i class="bi bi-trash3-fill"></i>
+            </button>
+        </div>
+    </form>
+
+    <div class="table-wrapper-custom">
+        <table class="table-cadastro">
+            <thead>
+                <tr>
+                    <th class="id-col">ID <span class="sort-arrow">▼</span></th>
+                    <th>Produto</th>
+                    <th>Categoria</th>
+                    <th>Código</th>
+                    <th>Qtd.</th>
+                    <th>Unidade</th>
+                    <th>Preço Custo</th>
+                    <th>Preço Venda</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                    <tr class="linha-produto"
+                        data-id="{{ produto.id }}"
+                        data-nome="{{ produto.nome|default:''|escape }}"
+                        data-categoria-nome="{{ produto.categoria.nome|default:''|escape }}"
+                        data-codigo="{{ produto.codigo|default:''|escape }}"
+                        data-quantidade-estoque="{{ produto.quantidade_estoque }}"
+                        data-estoque-minimo="{{ produto.estoque_minimo }}"
+                        data-unidade="{{ produto.unidade|default:''|escape }}"
+                        data-preco-custo="{{ produto.preco_custo }}"
+                        data-preco-venda="{{ produto.preco_venda }}">
+                        <td>{{ produto.id }}</td>
+                        <td>{{ produto.nome }}</td>
+                        <td>{{ produto.categoria.nome|default:"-" }}</td>
+                        <td>{{ produto.codigo|default:"-" }}</td>
+                        <td>{{ produto.quantidade_estoque }}</td>
+                        <td>{{ produto.unidade }}</td>
+                        <td>R$ {{ produto.preco_custo }}</td>
+                        <td>R$ {{ produto.preco_venda }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="8" class="empty-row">Nenhum produto cadastrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="modal fade" id="modalNovoProduto" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" action="{% url 'novo_produto' %}">
+                {% csrf_token %}
+                <div class="modal-header-custom">
+                    <div class="section-title-left"><i class="bi bi-boxes"></i><h1>Estoque - Novo Produto</h1></div>
+                </div>
+                <div class="modal-body-custom">
+                    <div class="form-grid">
+                        <div class="form-group-custom"><label>Produto :</label>{{ form.nome }}</div>
+                        <div class="form-group-custom"><label>Código :</label>{{ form.codigo }}</div>
+                        <div class="form-group-custom"><label>Categoria :</label>{{ form.categoria_nome }}</div>
+                        <div class="form-group-custom"><label>Unidade :</label>{{ form.unidade }}</div>
+                        <div class="form-group-custom"><label>Quantidade :</label>{{ form.quantidade_estoque }}</div>
+                        <div class="form-group-custom"><label>Estoque Mínimo :</label>{{ form.estoque_minimo }}</div>
+                        <div class="form-group-custom"><label>Preço Custo :</label>{{ form.preco_custo }}</div>
+                        <div class="form-group-custom"><label>Preço Venda :</label>{{ form.preco_venda }}</div>
+                    </div>
+                </div>
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">Cancelar <i class="bi bi-x-circle-fill"></i></button>
+                    <button type="submit" class="btn-modal-confirmar">Confirmar <i class="bi bi-check-circle-fill"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarProduto" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" id="formEditarProduto">
+                {% csrf_token %}
+                <div class="modal-header-custom">
+                    <div class="section-title-left"><i class="bi bi-pencil-square"></i><h1>Estoque - Editar Produto</h1></div>
+                </div>
+                <div class="modal-body-custom">
+                    <div class="form-grid">
+                        <div class="form-group-custom"><label>Produto :</label><input type="text" name="nome" id="editProdutoNome" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Código :</label><input type="text" name="codigo" id="editProdutoCodigo" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Categoria :</label><input type="text" name="categoria_nome" id="editProdutoCategoria" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Unidade :</label><input type="text" name="unidade" id="editProdutoUnidade" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Quantidade :</label><input type="number" step="0.01" name="quantidade_estoque" id="editProdutoQuantidade" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Estoque Mínimo :</label><input type="number" step="0.01" name="estoque_minimo" id="editProdutoEstoqueMinimo" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Preço Custo :</label><input type="number" step="0.01" name="preco_custo" id="editProdutoPrecoCusto" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Preço Venda :</label><input type="number" step="0.01" name="preco_venda" id="editProdutoPrecoVenda" class="form-control-custom"></div>
+                    </div>
+                </div>
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-modal-confirmar">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalExcluirProduto" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" id="formExcluirProduto">
+                {% csrf_token %}
+                <div class="modal-header-custom"><div class="section-title-left"><i class="bi bi-trash3-fill"></i><h1>Excluir Produto</h1></div></div>
+                <div class="modal-body-custom"><p class="text-white fs-5">Deseja realmente excluir este produto?</p><p class="text-white"><strong id="nomeExcluirProduto"></strong></p></div>
+                <div class="modal-footer-custom"><button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn-modal-confirmar">Confirmar Exclusão</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

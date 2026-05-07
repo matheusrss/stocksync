@@ -1,0 +1,134 @@
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" action="{% url 'movimentacoes_estoque' %}">
+                {% csrf_token %}
+                <input type="hidden" name="operacao" value="{{ operacao }}">
+
+                <div class="modal-header-custom">
+                    <div class="section-title-left">
+                        <i class="bi {{ icone }}"></i>
+                        <h1>{{ titulo }}</h1>
+                    </div>
+                </div>
+
+                <div class="modal-body-custom">
+                    <div class="form-grid">
+                        <div class="form-group-custom">
+                            <label>Produto cadastrado :</label>
+                            <select name="produto" class="form-control-custom produto-select-modal">
+                                <option value="">Selecione um produto</option>
+                                {% for produto in produtos %}
+                                    <option value="{{ produto.id }}">
+                                        {{ produto.nome }}{% if produto.codigo %} | {{ produto.codigo }}{% endif %} — Estoque: {{ produto.quantidade_estoque }} {{ produto.unidade }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label>Ou pesquisar por nome/código :</label>
+                            <input type="text" name="produto_busca" class="form-control-custom produto-busca-modal" placeholder="Digite o nome ou código do produto">
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label>Quantidade :</label>
+                            <input type="number" name="quantidade" class="form-control-custom" step="0.01" min="0.01" required placeholder="0,00">
+                        </div>
+                    </div>
+
+                    {% if tipo_financeiro == 'compra' %}
+                        <hr class="form-divider">
+                        <div class="form-grid">
+                            <div class="form-group-custom">
+                                <label>Fornecedor :</label>
+                                <select name="pessoa" class="form-control-custom">
+                                    <option value="">Selecione</option>
+                                    {% for pessoa in pessoas %}
+                                        <option value="{{ pessoa.id }}">{{ pessoa.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label>Valor total da compra :</label>
+                                <input type="number" name="valor" class="form-control-custom" step="0.01" min="0.01" required>
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label>Vencimento :</label>
+                                <input type="date" name="vencimento" class="form-control-custom" required>
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label>Status :</label>
+                                <select name="status" class="form-control-custom">
+                                    <option value="pendente">Pendente</option>
+                                    <option value="pago">Pago</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label>Data pagamento :</label>
+                                <input type="date" name="data_pagamento" class="form-control-custom">
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if tipo_financeiro == 'venda' %}
+                        <hr class="form-divider">
+                        <div class="form-grid">
+                            <div class="form-group-custom">
+                                <label>Cliente :</label>
+                                <select name="pessoa" class="form-control-custom">
+                                    <option value="">Selecione</option>
+                                    {% for pessoa in pessoas %}
+                                        <option value="{{ pessoa.id }}">{{ pessoa.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label>Valor total da venda :</label>
+                                <input type="number" name="valor" class="form-control-custom" step="0.01" min="0.01" required>
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label>Data prevista para receber :</label>
+                                <input type="date" name="vencimento" class="form-control-custom" required>
+                            </div>
+
+                            <div class="form-group-custom">
+                                <label>Status do recebimento :</label>
+                                <select name="status" class="form-control-custom" required>
+                                    <option value="receber">Receber</option>
+                                    <option value="pago">Pago</option>
+                                </select>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <hr class="form-divider">
+                    <div class="form-group-custom">
+                        <label>Observação :</label>
+                        <textarea name="observacao" class="form-control-custom textarea-custom" rows="3" placeholder="Opcional"></textarea>
+                    </div>
+
+                    <div class="modal-helper-link">
+                        <span>Produto não apareceu na lista?</span>
+                        <a href="{% url 'estoque' %}">Cadastrar novo produto</a>
+                    </div>
+                </div>
+
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">
+                        Cancelar <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                    <button type="submit" class="btn-modal-confirmar">
+                        {{ botao }} <i class="bi bi-check-circle-fill"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

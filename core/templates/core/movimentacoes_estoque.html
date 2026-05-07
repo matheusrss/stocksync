@@ -1,0 +1,111 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Entrada, Saída, Compra e Venda | StockSync{% endblock %}
+{% block page_title %}Entrada e Saída de Produtos{% endblock %}
+
+{% block content %}
+<section class="cadastro-page movimentacao-page">
+    <div class="section-title-bar">
+        <div class="section-title-left">
+            <i class="bi bi-arrow-left-right"></i>
+            <h1>Entrada, Saída, Compra e Venda</h1>
+        </div>
+
+        <a href="{% url 'estoque' %}" class="switch-btn">
+            <i class="bi bi-boxes"></i> Cadastro de Produtos
+        </a>
+    </div>
+
+    <div class="movement-info-grid movement-info-grid-4">
+        <button type="button" class="movement-info-card entrada movement-action-card" data-bs-toggle="modal" data-bs-target="#modalEntrada">
+            <i class="bi bi-arrow-down-circle-fill"></i>
+            <div>
+                <strong>Entrada</strong>
+                <span>Adicionar unidades de um produto já cadastrado.</span>
+            </div>
+        </button>
+
+        <button type="button" class="movement-info-card saida movement-action-card" data-bs-toggle="modal" data-bs-target="#modalSaida">
+            <i class="bi bi-arrow-up-circle-fill"></i>
+            <div>
+                <strong>Saída</strong>
+                <span>Retirar unidades manualmente do estoque.</span>
+            </div>
+        </button>
+
+        <button type="button" class="movement-info-card compra movement-action-card" data-bs-toggle="modal" data-bs-target="#modalCompra">
+            <i class="bi bi-cart-plus-fill"></i>
+            <div>
+                <strong>Compra</strong>
+                <span>Adicionar estoque e gerar pagamento pendente ou pago.</span>
+            </div>
+        </button>
+
+        <button type="button" class="movement-info-card venda movement-action-card" data-bs-toggle="modal" data-bs-target="#modalVenda">
+            <i class="bi bi-bag-check-fill"></i>
+            <div>
+                <strong>Venda</strong>
+                <span>Retirar estoque e gerar recebimento.</span>
+            </div>
+        </button>
+    </div>
+
+    <div class="movement-cadastro-alert">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>O produto precisa existir no cadastro antes da entrada, saída, compra ou venda.</span>
+        <a href="{% url 'estoque' %}">Ir ao cadastro de produtos</a>
+    </div>
+
+    <form method="get" class="toolbar-row">
+        <div class="left-tools">
+            <div class="filter-search-group">
+                <input type="text" name="busca" value="{{ busca }}" class="search-input-custom" placeholder="Pesquisar movimentações...">
+                <button type="submit" class="search-btn-custom"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-wrapper-custom">
+        <table class="table-cadastro">
+            <thead>
+                <tr>
+                    <th class="id-col">ID</th>
+                    <th>Produto</th>
+                    <th>Código</th>
+                    <th>Tipo</th>
+                    <th>Quantidade</th>
+                    <th>Observação</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for mov in movimentacoes %}
+                    <tr>
+                        <td>{{ mov.id }}</td>
+                        <td>{{ mov.produto.nome }}</td>
+                        <td>{{ mov.produto.codigo|default:"-" }}</td>
+                        <td>
+                            <span class="movement-badge badge-{{ mov.tipo }}">
+                                {{ mov.get_tipo_display }}
+                            </span>
+                        </td>
+                        <td>{{ mov.quantidade }} {{ mov.produto.unidade }}</td>
+                        <td>{{ mov.observacao|default:"-" }}</td>
+                        <td>{{ mov.data|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="empty-row">Nenhuma movimentação registrada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% include 'core/partials/modal_movimentacao_estoque.html' with modal_id='modalEntrada' titulo='Entrada de Produto' icone='bi-arrow-down-circle-fill' operacao='entrada' tipo_financeiro='simples' botao='Confirmar Entrada' %}
+{% include 'core/partials/modal_movimentacao_estoque.html' with modal_id='modalSaida' titulo='Saída de Produto' icone='bi-arrow-up-circle-fill' operacao='saida' tipo_financeiro='simples' botao='Confirmar Saída' %}
+{% include 'core/partials/modal_movimentacao_estoque.html' with modal_id='modalCompra' titulo='Compra de Produto' icone='bi-cart-plus-fill' operacao='compra' tipo_financeiro='compra' botao='Confirmar Compra' %}
+{% include 'core/partials/modal_movimentacao_estoque.html' with modal_id='modalVenda' titulo='Venda de Produto' icone='bi-bag-check-fill' operacao='venda' tipo_financeiro='venda' botao='Confirmar Venda' %}
+{% endblock %}

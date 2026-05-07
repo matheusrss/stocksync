@@ -1,0 +1,65 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# =========================
+# Ambiente virtual
+# =========================
+venv/
+.env/
+.env.local/
+
+# =========================
+# VSCode / IDEs
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Banco SQLite
+# =========================
+# Se quiser subir o banco para demonstração,
+# COMENTE a linha abaixo
+# db.sqlite3
+
+# =========================
+# Arquivos temporários
+# =========================
+*.tmp
+*.temp
+
+# =========================
+# Static files compilados
+# =========================
+staticfiles/
+
+# =========================
+# Sistema Operacional
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Pytest / Coverage
+# =========================
+.coverage
+htmlcov/
+.pytest_cache/
+
+# =========================
+# Mypy
+# =========================
+.mypy_cache/
+
+# =========================
+# Cache Django
+# =========================
+*.sqlite3-journal

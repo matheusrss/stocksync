@@ -1,0 +1,151 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Pagamentos e Recebimentos | StockSync{% endblock %}
+{% block page_title %}Pagamentos e Recebimentos{% endblock %}
+
+{% block content %}
+<section class="cadastro-page">
+    <div class="section-title-bar">
+        <div class="section-title-left">
+            <i class="bi bi-cash-coin"></i>
+            <h1>Financeiro - Pagamentos e Recebimentos</h1>
+        </div>
+    </div>
+
+    <form method="get" class="toolbar-row">
+        <div class="left-tools">
+            <div class="filter-search-group">
+                <select class="filter-select">
+                    <option>Filtrar por</option>
+                    <option>Descrição</option>
+                    <option>Pessoa / Empresa</option>
+                    <option>Status</option>
+                </select>
+                <input type="text" name="busca" value="{{ busca }}" class="search-input-custom" placeholder="Descrição, pessoa ou status...">
+                <button type="submit" class="search-btn-custom"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+
+        <div class="right-tools">
+            <button type="button" class="action-btn btn-new" data-bs-toggle="modal" data-bs-target="#modalNovaConta">
+                <i class="bi bi-plus-lg"></i> Novo
+            </button>
+            <button type="button" class="action-btn btn-edit" id="btnEditarConta" disabled>
+                <i class="bi bi-pencil-fill"></i> Editar
+            </button>
+            <button type="button" class="action-btn btn-delete" id="btnExcluirConta" disabled>
+                <i class="bi bi-trash3-fill"></i>
+            </button>
+        </div>
+    </form>
+
+    <div class="finance-status-legend">
+        <span class="status-badge status-vencido">Vencido</span>
+        <span class="status-badge status-pendente">Pendente</span>
+        <span class="status-badge status-pago">Pago</span>
+        <span class="status-badge status-cancelado">Cancelado</span>
+        <span class="status-badge status-receber">Receber</span>
+    </div>
+
+    <div class="table-wrapper-custom">
+        <table class="table-cadastro">
+            <thead>
+                <tr>
+                    <th class="id-col">ID <span class="sort-arrow">▼</span></th>
+                    <th>Descrição</th>
+                    <th>Pessoa / Empresa</th>
+                    <th>Valor</th>
+                    <th>Vencimento</th>
+                    <th>Status</th>
+                    <th>Pagamento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for conta in contas %}
+                    <tr class="linha-conta"
+                        data-id="{{ conta.id }}"
+                        data-descricao="{{ conta.descricao|default:''|escape }}"
+                        data-fornecedor="{{ conta.fornecedor.id|default:'' }}"
+                        data-valor="{{ conta.valor }}"
+                        data-vencimento="{{ conta.vencimento|date:'Y-m-d' }}"
+                        data-status="{{ conta.status }}"
+                        data-data-pagamento="{{ conta.data_pagamento|date:'Y-m-d' }}"
+                        data-observacao="{{ conta.observacao|default:''|escape }}">
+                        <td>{{ conta.id }}</td>
+                        <td>{{ conta.descricao }}</td>
+                        <td>{{ conta.fornecedor.nome|default:"-" }}</td>
+                        <td>R$ {{ conta.valor }}</td>
+                        <td>{{ conta.vencimento|date:"d/m/Y" }}</td>
+                        <td><span class="status-badge {{ conta.status_badge_class }}">{{ conta.get_status_display }}</span></td>
+                        <td>{{ conta.data_pagamento|date:"d/m/Y"|default:"-" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="7" class="empty-row">Nenhum pagamento ou recebimento cadastrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="modal fade" id="modalNovaConta" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" action="{% url 'nova_conta_pagar' %}">
+                {% csrf_token %}
+                <div class="modal-header-custom"><div class="section-title-left"><i class="bi bi-cash-coin"></i><h1>Financeiro - Novo Pagamento/Recebimento</h1></div></div>
+                <div class="modal-body-custom">
+                    <div class="form-grid">
+                        <div class="form-group-custom"><label>Descrição :</label>{{ form.descricao }}</div>
+                        <div class="form-group-custom"><label>Pessoa / Empresa :</label>{{ form.fornecedor }}</div>
+                        <div class="form-group-custom"><label>Valor :</label>{{ form.valor }}</div>
+                        <div class="form-group-custom"><label>Vencimento :</label>{{ form.vencimento }}</div>
+                        <div class="form-group-custom"><label>Status :</label>{{ form.status }}</div>
+                        <div class="form-group-custom"><label>Data Pagamento :</label>{{ form.data_pagamento }}</div>
+                    </div>
+                    <div class="form-group-custom mt-custom"><label>Observação :</label>{{ form.observacao }}</div>
+                </div>
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">Cancelar <i class="bi bi-x-circle-fill"></i></button>
+                    <button type="submit" class="btn-modal-confirmar">Confirmar <i class="bi bi-check-circle-fill"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarConta" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" id="formEditarConta">
+                {% csrf_token %}
+                <div class="modal-header-custom"><div class="section-title-left"><i class="bi bi-pencil-square"></i><h1>Financeiro - Editar Pagamento/Recebimento</h1></div></div>
+                <div class="modal-body-custom">
+                    <div class="form-grid">
+                        <div class="form-group-custom"><label>Descrição :</label><input type="text" name="descricao" id="editContaDescricao" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Pessoa / Empresa :</label><select name="fornecedor" id="editContaFornecedor" class="form-control-custom"><option value="">---------</option>{% for pessoa in form.fornecedor.field.queryset %}<option value="{{ pessoa.id }}">{{ pessoa.nome }}</option>{% endfor %}</select></div>
+                        <div class="form-group-custom"><label>Valor :</label><input type="number" step="0.01" name="valor" id="editContaValor" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Vencimento :</label><input type="date" name="vencimento" id="editContaVencimento" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Status :</label><select name="status" id="editContaStatus" class="form-control-custom"><option value="pendente">Pendente</option><option value="pago">Pago</option><option value="vencido">Vencido</option><option value="cancelado">Cancelado</option><option value="receber">Receber</option></select></div>
+                        <div class="form-group-custom"><label>Data Pagamento :</label><input type="date" name="data_pagamento" id="editContaDataPagamento" class="form-control-custom"></div>
+                    </div>
+                    <div class="form-group-custom mt-custom"><label>Observação :</label><textarea name="observacao" id="editContaObservacao" class="form-control-custom textarea-custom" rows="3"></textarea></div>
+                </div>
+                <div class="modal-footer-custom"><button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn-modal-confirmar">Salvar</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalExcluirConta" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" id="formExcluirConta">
+                {% csrf_token %}
+                <div class="modal-header-custom"><div class="section-title-left"><i class="bi bi-trash3-fill"></i><h1>Excluir Registro</h1></div></div>
+                <div class="modal-body-custom"><p class="text-white fs-5">Deseja realmente excluir este pagamento/recebimento?</p><p class="text-white"><strong id="nomeExcluirConta"></strong></p></div>
+                <div class="modal-footer-custom"><button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn-modal-confirmar">Confirmar Exclusão</button></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

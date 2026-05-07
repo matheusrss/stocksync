@@ -1,0 +1,268 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+    {% if tipo == 'clientes' %}Clientes | StockSync{% else %}Funcionários | StockSync{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="cadastro-page">
+    <div class="section-title-bar">
+        <div class="section-title-left">
+            <i class="bi bi-people-fill"></i>
+            <h1>{{ titulo_pagina }}</h1>
+        </div>
+    </div>
+
+    <form method="get" class="toolbar-row">
+        <input type="hidden" name="tipo" value="{{ tipo }}">
+        <div class="left-tools">
+            <div class="filter-search-group">
+                <input type="text" name="busca" value="{{ busca }}" class="search-input-custom" placeholder="Pesquisar...">
+                <button type="submit" class="search-btn-custom"><i class="bi bi-search"></i></button>
+            </div>
+        </div>
+
+        <div class="right-tools">
+            <button type="button" class="action-btn btn-new" data-bs-toggle="modal" data-bs-target="#modalNovoCadastro">
+                <i class="bi bi-plus-lg"></i> Novo
+            </button>
+            <button type="button" class="action-btn btn-edit" id="btnEditarCadastro" disabled>
+                <i class="bi bi-pencil-fill"></i> Editar
+            </button>
+            <button type="button" class="action-btn btn-delete" id="btnExcluirCadastro" disabled>
+                <i class="bi bi-trash3-fill"></i>
+            </button>
+        </div>
+    </form>
+
+    <div class="table-wrapper-custom">
+        <table class="table-cadastro">
+            <thead>
+                <tr>
+                    <th class="id-col">ID <span class="sort-arrow">▼</span></th>
+                    <th>Nome</th>
+                    <th>CPF/CNPJ</th>
+                    <th>Função</th>
+                    <th>Endereço</th>
+                    <th>Telefone</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in registros %}
+                    <tr class="linha-selecionavel"
+                        data-id="{{ item.id }}"
+                        data-tipo="{{ tipo }}"
+                        data-nome="{{ item.nome|default:''|escape }}"
+                        data-cpf-cnpj="{% if tipo == 'clientes' %}{{ item.cpf_cnpj|default:''|escape }}{% else %}{{ item.cpf|default:''|escape }}{% endif %}"
+                        data-funcao="{% if tipo == 'clientes' %}{{ item.funcao|default:''|escape }}{% else %}{{ item.cargo|default:''|escape }}{% endif %}"
+                        data-nome-fantasia="{% if tipo == 'clientes' %}{{ item.nome_fantasia|default:''|escape }}{% endif %}"
+                        data-email="{{ item.email|default:''|escape }}"
+                        data-telefone-fixo="{{ item.telefone_fixo|default:''|escape }}"
+                        data-celular="{{ item.celular|default:''|escape }}"
+                        data-cep="{{ item.cep|default:''|escape }}"
+                        data-rua="{{ item.rua|default:''|escape }}"
+                        data-numero="{{ item.numero|default:''|escape }}"
+                        data-bairro="{{ item.bairro|default:''|escape }}"
+                        data-complemento="{{ item.complemento|default:''|escape }}"
+                        data-pais="{{ item.pais|default:''|escape }}"
+                        data-uf="{{ item.uf|default:''|escape }}"
+                        data-cidade="{{ item.cidade|default:''|escape }}">
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.nome }}</td>
+                        {% if tipo == 'clientes' %}
+                            <td>{{ item.cpf_cnpj }}</td>
+                            <td><span class="role-badge {{ item.badge_class }}">{{ item.get_funcao_display }}</span></td>
+                        {% else %}
+                            <td>{{ item.cpf }}</td>
+                            <td>{{ item.cargo }}</td>
+                        {% endif %}
+                        <td>{{ item.endereco }}</td>
+                        <td>{{ item.telefone }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6" class="empty-row">Nenhum registro encontrado.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="modal fade" id="modalNovoCadastro" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" action="{% url 'novo_cadastro' %}">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="{{ tipo }}">
+
+                <div class="modal-header-custom">
+                    <div class="section-title-left">
+                        <i class="bi bi-people-fill"></i>
+                        {% if tipo == 'clientes' %}<h1>Clientes - Novo Cadastro</h1>{% else %}<h1>Funcionários - Novo Cadastro</h1>{% endif %}
+                    </div>
+                </div>
+
+                <div class="modal-body-custom">
+                    {% if form.errors %}
+    <div class="modal-errors-box">
+        <strong>Corrija os campos abaixo:</strong>
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+                    <div class="form-grid">
+                        <div class="form-group-custom"><label>Nome :</label>{{ form.nome }}</div>
+                        {% if tipo == 'clientes' %}
+<div class="form-group-custom">
+    <label>CPF / CNPJ :</label>
+
+    {{ form.cpf_cnpj }}
+
+    {% if form.cpf_cnpj.errors %}
+        <div class="field-error">
+            {{ form.cpf_cnpj.errors.0 }}
+        </div>
+    {% endif %}
+</div>
+                            <div class="form-group-custom"><label>Função :</label>{{ form.funcao }}</div>
+                            <div class="form-group-custom"><label>Nome Fantasia :</label>{{ form.nome_fantasia }}</div>
+                        {% else %}
+                            <div class="form-group-custom">
+    <label>CPF :</label>
+
+    {{ form.cpf }}
+
+    {% if form.cpf.errors %}
+        <div class="field-error">
+            {{ form.cpf.errors.0 }}
+        </div>
+    {% endif %}
+</div>
+                            <div class="form-group-custom"><label>Cargo :</label>{{ form.cargo }}</div>
+                        {% endif %}
+                        <div class="form-group-custom">
+    <label>Email :</label>
+
+    {{ form.email }}
+
+    {% if form.email.errors %}
+        <div class="field-error">
+            {{ form.email.errors.0 }}
+        </div>
+    {% endif %}
+</div>
+                        <div class="form-group-custom"><label>Telefone Fixo :</label>{{ form.telefone_fixo }}</div>
+                        <div class="form-group-custom"><label>Celular :</label>{{ form.celular }}</div>
+                    </div>
+
+                    <hr class="form-divider">
+
+                    <div class="form-grid">
+                        <div class="form-group-custom"><label>CEP :</label>{{ form.cep }}</div>
+                        <div class="form-group-custom"><label>Rua / Logradouro :</label>{{ form.rua }}</div>
+                        <div class="form-group-custom"><label>Número :</label>{{ form.numero }}</div>
+                        <div class="form-group-custom"><label>Bairro :</label>{{ form.bairro }}</div>
+                        <div class="form-group-custom"><label>Complemento :</label>{{ form.complemento }}</div>
+                        <div class="form-group-custom"><label>País :</label>{{ form.pais }}</div>
+                        <div class="form-group-custom"><label>UF :</label>{{ form.uf }}</div>
+                        <div class="form-group-custom"><label>Cidade :</label>{{ form.cidade }}</div>
+                    </div>
+                </div>
+
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">Cancelar <i class="bi bi-x-circle-fill"></i></button>
+                    <button type="submit" class="btn-modal-confirmar">Confirmar <i class="bi bi-check-circle-fill"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditarCadastro" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" id="formEditarCadastro">
+                {% csrf_token %}
+                <div class="modal-header-custom">
+                    <div class="section-title-left">
+                        <i class="bi bi-pencil-square"></i>
+                        <h1>Editar Cadastro</h1>
+                    </div>
+                </div>
+
+                <div class="modal-body-custom">
+                    <div class="form-grid">
+                        <div class="form-group-custom"><label>Nome :</label><input type="text" name="nome" id="editNome" class="form-control-custom"></div>
+                        {% if tipo == 'clientes' %}
+                            <div class="form-group-custom"><label>CPF / CNPJ :</label><input type="text" name="cpf_cnpj" id="editCpfCnpj" class="form-control-custom"></div>
+                            <div class="form-group-custom"><label>Função :</label><select name="funcao" id="editFuncao" class="form-control-custom"><option value="cliente">Cliente</option><option value="fornecedor">Fornecedor</option><option value="ambos">Ambos</option></select></div>
+                            <div class="form-group-custom"><label>Nome Fantasia :</label><input type="text" name="nome_fantasia" id="editNomeFantasia" class="form-control-custom"></div>
+                        {% else %}
+                            <div class="form-group-custom"><label>CPF :</label><input type="text" name="cpf" id="editCpfCnpj" class="form-control-custom"></div>
+                            <div class="form-group-custom"><label>Cargo :</label><input type="text" name="cargo" id="editFuncao" class="form-control-custom"></div>
+                        {% endif %}
+                        <div class="form-group-custom"><label>Email :</label><input type="email" name="email" id="editEmail" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Telefone Fixo :</label><input type="text" name="telefone_fixo" id="editTelefoneFixo" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Celular :</label><input type="text" name="celular" id="editCelular" class="form-control-custom"></div>
+                    </div>
+
+                    <hr class="form-divider">
+
+                    <div class="form-grid">
+                        <div class="form-group-custom"><label>CEP :</label><input type="text" name="cep" id="editCep" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Rua / Logradouro :</label><input type="text" name="rua" id="editRua" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Número :</label><input type="text" name="numero" id="editNumero" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Bairro :</label><input type="text" name="bairro" id="editBairro" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Complemento :</label><input type="text" name="complemento" id="editComplemento" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>País :</label><input type="text" name="pais" id="editPais" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>UF :</label><input type="text" name="uf" id="editUf" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Cidade :</label><input type="text" name="cidade" id="editCidade" class="form-control-custom"></div>
+                    </div>
+                </div>
+
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">Cancelar <i class="bi bi-x-circle-fill"></i></button>
+                    <button type="submit" class="btn-modal-confirmar">Salvar <i class="bi bi-check-circle-fill"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalExcluirCadastro" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-cadastro-custom">
+            <form method="POST" id="formExcluirCadastro">
+                {% csrf_token %}
+                <div class="modal-header-custom">
+                    <div class="section-title-left"><i class="bi bi-trash3-fill"></i><h1>Excluir Cadastro</h1></div>
+                </div>
+                <div class="modal-body-custom">
+                    <p class="text-white fs-5">Deseja realmente excluir este registro?</p>
+                    <p class="text-white"><strong id="nomeExcluirCadastro"></strong></p>
+                </div>
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancelar" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-modal-confirmar">Confirmar Exclusão</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% if abrir_modal_novo %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modalEl = document.getElementById('modalNovoCadastro');
+
+    if (modalEl) {
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+});
+</script>
+{% endif %}
+{% endblock %}
