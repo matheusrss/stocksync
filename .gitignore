@@ -28,7 +28,7 @@ venv/
 # =========================
 # Se quiser subir o banco para demonstração,
 # COMENTE a linha abaixo
-# db.sqlite3
+db.sqlite3
 
 # =========================
 # Arquivos temporários
