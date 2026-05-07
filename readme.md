@@ -1,18 +1,26 @@
 # 📦 StockSync ERP
 
-A modern ERP web application built with Django for complete business management, including:
-
-* Clients
-* Employees
-* Inventory
-* Product stock operations
-* Purchases and sales
-* Financial management
-* Smart dashboard analytics
+A modern ERP web application built with Django for inventory, financial, employee and business management.
 
 ---
 
-# 🚀 Technologies Used
+# 🚀 Features
+
+* Client management
+* Employee management
+* Inventory control
+* Product stock operations
+* Purchases and sales
+* Financial management
+* Smart dashboard
+* CPF/CNPJ validation
+* Email validation
+* Interactive tables
+* Responsive modern UI
+
+---
+
+# 🛠️ Technologies
 
 ## Backend
 
@@ -26,152 +34,18 @@ A modern ERP web application built with Django for complete business management,
 * CSS3
 * JavaScript
 * Bootstrap 5
-* Bootstrap Icons
 
 ## Libraries
 
-* validate-docbr → CPF/CNPJ validation
-* email-validator → email validation
-* IMask.js → automatic input masks
-
----
-
-# 🎨 Features
-
-## 📊 Smart Dashboard
-
-Real-time dashboard integrated with the database displaying:
-
-* Total clients
-* Total employees
-* Total inventory value
-* Low stock products
-* Overdue payments
-* Accounts payable
-* Accounts receivable
-* Monthly purchases and sales
-* Recent stock movements
-* Featured products
-* Financial charts
-
----
-
-# 👥 Clients & Employees
-
-## Features
-
-* Create
-* Edit
-* Delete
-* Dynamic search
-* Interactive table selection
-* Automatic input masks
-* CPF/CNPJ validation
-* Email validation
-
-## Validations
-
-* Valid CPF
-* Valid CNPJ
-* Valid email
-* Automatic masks for:
-
-  * CPF
-  * CNPJ
-  * Phone number
-  * Mobile number
-  * ZIP code
-  * State abbreviation
-
----
-
-# 📦 Inventory
-
-## Features
-
-* Product registration
-* Stock control
-* Minimum stock alerts
-* Cost price
-* Selling price
-* Automatic categories
-* Search by name or code
-
----
-
-# 🔄 Inventory Operations
-
-## Available operations
-
-### Stock Entry
-
-* Adds units to inventory
-
-### Stock Exit
-
-* Removes units from inventory
-
-### Purchase
-
-* Adds products to stock
-* Generates financial records
-
-### Sale
-
-* Removes products from stock
-* Generates receivable records
-
----
-
-# 💰 Financial Management
-
-## Features
-
-* Financial control
-* Automatic status updates
-* Automatic overdue detection
-* Manual financial entries
-* Integrated with purchases and sales
-
-## Status Types
-
-| Status     | Color  |
-| ---------- | ------ |
-| Paid       | Green  |
-| Pending    | Orange |
-| Receivable | Blue   |
-| Overdue    | Red    |
-| Cancelled  | Gray   |
-
----
-
-# 🗄️ Database
-
-The system uses SQLite integrated with Django ORM.
-
-## Main tables
-
-* Clients
-* Employees
-* Products
-* Categories
-* Financial records
-* Stock operations
-
----
-
-# 🔐 Authentication & Security
-
-* Django Authentication System
-* Protected routes
-* Superuser access
-* CSRF protection
+* validate-docbr
+* email-validator
+* IMask.js
 
 ---
 
 # 📁 Project Structure
 
-```text
+```text id="m85y7q"
 StockSync/
 │
 ├── config/
@@ -179,114 +53,96 @@ StockSync/
 ├── estoque/
 ├── static/
 ├── templates/
-├── db.sqlite3
 ├── manage.py
-└── requirements.txt
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-# ⚙️ Full Installation Guide
+# ⚙️ Installation Guide
 
-# ✅ 1. Install Python
+# ✅ 1. Clone Repository
 
-Download Python:
-
-https://www.python.org/downloads/
-
-During installation:
-
-✅ check:
-
-```text
-Add Python to PATH
-```
-
----
-
-# ✅ 2. Verify Python Installation
-
-Open terminal:
-
-```bash
-python --version
-```
-
-or:
-
-```bash
-py --version
-```
-
----
-
-# ✅ 3. Clone Repository
-
-```bash
+```bash id="3xk8uq"
 git clone YOUR_REPOSITORY_URL
 ```
 
 ---
 
-# ✅ 4. Open Project Folder
+# ✅ 2. Open Project Folder
 
-```bash
+```bash id="fgjwhx"
 cd StockSync
 ```
 
 ---
 
-# ✅ 5. Create Virtual Environment
+# ✅ 3. Create Virtual Environment
 
 ## Windows
 
-```bash
+```bash id="gjlwmw"
 python -m venv venv
 ```
 
 ## Linux / Mac
 
-```bash
+```bash id="mij1rk"
 python3 -m venv venv
 ```
 
 ---
 
-# ✅ 6. Activate Virtual Environment
+# ✅ 4. Activate Virtual Environment
 
 ## Windows
 
-```bash
+```bash id="o1v2i7"
 venv\Scripts\activate
 ```
 
 ## Linux / Mac
 
-```bash
+```bash id="jq40d6"
 source venv/bin/activate
 ```
 
 ---
 
-# ✅ 7. Install Dependencies
+# ✅ 5. Install Dependencies
 
-```bash
+```bash id="3y7p2x"
 pip install -r requirements.txt
 ```
 
 ---
 
-# ✅ 8. Run Database Migrations
+# ⚠️ IMPORTANT
 
-```bash
-python manage.py migrate
-```
+This repository does NOT include the SQLite database file.
+
+Because of that, you MUST create the database locally before running the project.
 
 ---
 
-# ✅ 9. Create Superuser
+# ✅ 6. Create Database
 
-```bash
+Run migrations:
+
+```bash id="qrj1y7"
+python manage.py migrate
+```
+
+This command creates all database tables automatically.
+
+---
+
+# ✅ 7. Create Superuser
+
+Create an admin account:
+
+```bash id="4hv2b0"
 python manage.py createsuperuser
 ```
 
@@ -298,9 +154,9 @@ Fill:
 
 ---
 
-# ✅ 10. Start Server
+# ✅ 8. Run Development Server
 
-```bash
+```bash id="jlwm1h"
 python manage.py runserver
 ```
 
@@ -310,7 +166,7 @@ python manage.py runserver
 
 Open in browser:
 
-```text
+```text id="r0m0h7"
 http://127.0.0.1:8000
 ```
 
@@ -318,7 +174,7 @@ http://127.0.0.1:8000
 
 # 🔐 Admin Panel
 
-```text
+```text id="p1nrfc"
 http://127.0.0.1:8000/admin
 ```
 
@@ -330,86 +186,53 @@ Use the superuser credentials created previously.
 
 ## Django
 
-```bash
+```bash id="st9x6z"
 pip install django
 ```
 
 ## validate-docbr
 
-```bash
+```bash id="iw5s1t"
 pip install validate-docbr
 ```
 
 ## email-validator
 
-```bash
+```bash id="5k1r2w"
 pip install email-validator
 ```
 
 ---
 
-# 🧩 Libraries Used
-
-## validate-docbr
-
-Used for:
-
-* CPF validation
-* CNPJ validation
-
----
-
-## email-validator
-
-Used for:
-
-* Email validation
-* Domain verification
-* MX record verification
-
----
-
-## IMask.js
-
-Used for automatic masks:
-
-* CPF
-* CNPJ
-* Phone numbers
-* ZIP code
-* Currency values
-
----
-
 # 🔄 Useful Commands
 
-## Create Migrations
+## Create migrations
 
-```bash
+```bash id="1ck9l3"
 python manage.py makemigrations
 ```
 
 ---
 
-## Apply Migrations
+## Apply migrations
 
-```bash
+```bash id="8c4qwe"
 python manage.py migrate
 ```
 
 ---
 
-## Create Superuser
+## Create superuser
 
-```bash
+```bash id="ibk4rt"
 python manage.py createsuperuser
 ```
 
 ---
 
-## Run Server
+## Run server
 
-```bash
+```bash id="yyc4kh"
 python manage.py runserver
 ```
 
@@ -421,19 +244,15 @@ python manage.py runserver
 * PDF reports
 * User roles & permissions
 * Notification system
-* Image upload
 * WhatsApp integration
 * Email integration
-* Supplier management
-* Cash flow management
-* Advanced charts
 * Cloud deployment
 
 ---
 
 # 👨‍💻 Developer
 
-Project developed for academic purposes and web development learning using Django.
+Project developed for academic and educational purposes using Django.
 
 ---
 
