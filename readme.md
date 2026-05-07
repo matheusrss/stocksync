@@ -65,7 +65,7 @@ StockSync/
 # ✅ 1. Clone Repository
 
 ```bash id="3xk8uq"
-git clone YOUR_REPOSITORY_URL
+git clone https://github.com/matheusrss/StockSync.git
 ```
 
 ---
