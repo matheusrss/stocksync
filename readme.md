@@ -1,18 +1,18 @@
 # 📦 StockSync ERP
 
-Sistema ERP web desenvolvido com Django para gerenciamento completo de:
+A modern ERP web application built with Django for complete business management, including:
 
-* Clientes
-* Funcionários
-* Estoque
-* Entrada e saída de produtos
-* Compras e vendas
-* Pagamentos e recebimentos
-* Dashboard gerencial
+* Clients
+* Employees
+* Inventory
+* Product stock operations
+* Purchases and sales
+* Financial management
+* Smart dashboard analytics
 
 ---
 
-# 🚀 Tecnologias Utilizadas
+# 🚀 Technologies Used
 
 ## Backend
 
@@ -28,148 +28,148 @@ Sistema ERP web desenvolvido com Django para gerenciamento completo de:
 * Bootstrap 5
 * Bootstrap Icons
 
-## Bibliotecas
+## Libraries
 
-* validate-docbr → validação de CPF/CNPJ
-* email-validator → validação de emails
-* IMask.js → máscaras automáticas de formulário
-
----
-
-# 🎨 Funcionalidades
-
-## 📊 Dashboard Inteligente
-
-Dashboard integrado ao banco de dados com:
-
-* Total de clientes
-* Total de funcionários
-* Valor total em estoque
-* Produtos com estoque baixo
-* Contas vencidas
-* Contas a pagar
-* Contas a receber
-* Compras e vendas do mês
-* Últimas movimentações
-* Produtos em destaque
-* Gráficos financeiros
+* validate-docbr → CPF/CNPJ validation
+* email-validator → email validation
+* IMask.js → automatic input masks
 
 ---
 
-# 👥 Clientes e Funcionários
+# 🎨 Features
 
-## Funcionalidades
+## 📊 Smart Dashboard
 
-* Cadastro
-* Edição
-* Exclusão
-* Busca dinâmica
-* Seleção interativa na tabela
-* Máscaras automáticas
-* Validação de CPF/CNPJ
-* Validação de email
+Real-time dashboard integrated with the database displaying:
 
-## Validações
+* Total clients
+* Total employees
+* Total inventory value
+* Low stock products
+* Overdue payments
+* Accounts payable
+* Accounts receivable
+* Monthly purchases and sales
+* Recent stock movements
+* Featured products
+* Financial charts
 
-* CPF válido
-* CNPJ válido
-* Email válido
-* Máscaras automáticas para:
+---
+
+# 👥 Clients & Employees
+
+## Features
+
+* Create
+* Edit
+* Delete
+* Dynamic search
+* Interactive table selection
+* Automatic input masks
+* CPF/CNPJ validation
+* Email validation
+
+## Validations
+
+* Valid CPF
+* Valid CNPJ
+* Valid email
+* Automatic masks for:
 
   * CPF
   * CNPJ
-  * Telefone
-  * Celular
-  * CEP
-  * UF
+  * Phone number
+  * Mobile number
+  * ZIP code
+  * State abbreviation
 
 ---
 
-# 📦 Estoque
+# 📦 Inventory
 
-## Funcionalidades
+## Features
 
-* Cadastro de produtos
-* Controle de estoque
-* Estoque mínimo
-* Valor de custo
-* Valor de venda
-* Categorias automáticas
-* Busca por nome ou código
-
----
-
-# 🔄 Movimentações de Estoque
-
-## Operações disponíveis
-
-### Entrada
-
-* Adiciona unidades ao estoque
-
-### Saída
-
-* Remove unidades do estoque
-
-### Compra
-
-* Adiciona produtos ao estoque
-* Gera lançamento financeiro
-
-### Venda
-
-* Remove produtos do estoque
-* Gera recebimento financeiro
+* Product registration
+* Stock control
+* Minimum stock alerts
+* Cost price
+* Selling price
+* Automatic categories
+* Search by name or code
 
 ---
 
-# 💰 Pagamentos e Recebimentos
+# 🔄 Inventory Operations
 
-## Funcionalidades
+## Available operations
 
-* Controle financeiro
-* Status automáticos
-* Atualização automática de vencidos
-* Cadastro manual
-* Integração com compras e vendas
+### Stock Entry
 
-## Status disponíveis
+* Adds units to inventory
 
-| Status    | Cor      |
-| --------- | -------- |
-| Pago      | Verde    |
-| Pendente  | Laranja  |
-| Receber   | Azul     |
-| Vencido   | Vermelho |
-| Cancelado | Cinza    |
+### Stock Exit
 
----
+* Removes units from inventory
 
-# 🗄️ Banco de Dados
+### Purchase
 
-O sistema utiliza SQLite integrado ao Django ORM.
+* Adds products to stock
+* Generates financial records
 
-## Principais tabelas
+### Sale
 
-* Clientes
-* Funcionários
-* Produtos
-* Categorias
-* Contas financeiras
-* Movimentações de estoque
+* Removes products from stock
+* Generates receivable records
 
 ---
 
-# 🔐 Login e Segurança
+# 💰 Financial Management
 
-* Sistema autenticado com Django Authentication
-* Área protegida por login
-* Controle de superusuário
-* Proteção CSRF nos formulários
+## Features
+
+* Financial control
+* Automatic status updates
+* Automatic overdue detection
+* Manual financial entries
+* Integrated with purchases and sales
+
+## Status Types
+
+| Status     | Color  |
+| ---------- | ------ |
+| Paid       | Green  |
+| Pending    | Orange |
+| Receivable | Blue   |
+| Overdue    | Red    |
+| Cancelled  | Gray   |
 
 ---
 
-# 📁 Estrutura do Projeto
+# 🗄️ Database
+
+The system uses SQLite integrated with Django ORM.
+
+## Main tables
+
+* Clients
+* Employees
+* Products
+* Categories
+* Financial records
+* Stock operations
+
+---
+
+# 🔐 Authentication & Security
+
+* Django Authentication System
+* Protected routes
+* Superuser access
+* CSRF protection
+
+---
+
+# 📁 Project Structure
 
 ```text
 StockSync/
@@ -186,17 +186,17 @@ StockSync/
 
 ---
 
-# ⚙️ Instalação Completa do Projeto
+# ⚙️ Full Installation Guide
 
-# ✅ 1. Instalar Python
+# ✅ 1. Install Python
 
-Baixe o Python:
+Download Python:
 
 https://www.python.org/downloads/
 
-Durante a instalação:
+During installation:
 
-✅ marque:
+✅ check:
 
 ```text
 Add Python to PATH
@@ -204,15 +204,15 @@ Add Python to PATH
 
 ---
 
-# ✅ 2. Verificar instalação do Python
+# ✅ 2. Verify Python Installation
 
-Abra o terminal e execute:
+Open terminal:
 
 ```bash
 python --version
 ```
 
-ou:
+or:
 
 ```bash
 py --version
@@ -220,15 +220,15 @@ py --version
 
 ---
 
-# ✅ 3. Clonar o projeto
+# ✅ 3. Clone Repository
 
 ```bash
-git clone URL_DO_REPOSITORIO
+git clone YOUR_REPOSITORY_URL
 ```
 
 ---
 
-# ✅ 4. Entrar na pasta do projeto
+# ✅ 4. Open Project Folder
 
 ```bash
 cd StockSync
@@ -236,7 +236,7 @@ cd StockSync
 
 ---
 
-# ✅ 5. Criar ambiente virtual
+# ✅ 5. Create Virtual Environment
 
 ## Windows
 
@@ -252,7 +252,7 @@ python3 -m venv venv
 
 ---
 
-# ✅ 6. Ativar ambiente virtual
+# ✅ 6. Activate Virtual Environment
 
 ## Windows
 
@@ -268,7 +268,7 @@ source venv/bin/activate
 
 ---
 
-# ✅ 7. Instalar dependências
+# ✅ 7. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -276,7 +276,7 @@ pip install -r requirements.txt
 
 ---
 
-# ✅ 8. Criar banco de dados
+# ✅ 8. Run Database Migrations
 
 ```bash
 python manage.py migrate
@@ -284,21 +284,21 @@ python manage.py migrate
 
 ---
 
-# ✅ 9. Criar superusuário
+# ✅ 9. Create Superuser
 
 ```bash
 python manage.py createsuperuser
 ```
 
-Preencha:
+Fill:
 
-* usuário
+* username
 * email
-* senha
+* password
 
 ---
 
-# ✅ 10. Executar servidor
+# ✅ 10. Start Server
 
 ```bash
 python manage.py runserver
@@ -306,9 +306,9 @@ python manage.py runserver
 
 ---
 
-# 🌐 Acesso ao sistema
+# 🌐 Access System
 
-Abra no navegador:
+Open in browser:
 
 ```text
 http://127.0.0.1:8000
@@ -316,21 +316,17 @@ http://127.0.0.1:8000
 
 ---
 
-# 🔐 Login administrativo
-
-Painel administrativo:
+# 🔐 Admin Panel
 
 ```text
 http://127.0.0.1:8000/admin
 ```
 
-Utilize o superusuário criado anteriormente.
+Use the superuser credentials created previously.
 
 ---
 
-# 📦 Instalação Manual das Bibliotecas
-
-Caso necessário:
+# 📦 Manual Library Installation
 
 ## Django
 
@@ -352,45 +348,42 @@ pip install email-validator
 
 ---
 
-# 🧩 Bibliotecas Utilizadas
+# 🧩 Libraries Used
 
 ## validate-docbr
 
-Utilizada para validação de:
+Used for:
 
-* CPF
-* CNPJ
+* CPF validation
+* CNPJ validation
 
 ---
 
 ## email-validator
 
-Utilizada para:
+Used for:
 
-* validação de emails
-* verificação de domínio
-* verificação MX
+* Email validation
+* Domain verification
+* MX record verification
 
 ---
 
 ## IMask.js
 
-Utilizada para máscaras automáticas:
+Used for automatic masks:
 
 * CPF
 * CNPJ
-* telefone
-* celular
-* CEP
-* valores monetários
+* Phone numbers
+* ZIP code
+* Currency values
 
 ---
 
-# 🔄 Comandos úteis
+# 🔄 Useful Commands
 
-## Criar migrations
-
-Quando alterar models.py:
+## Create Migrations
 
 ```bash
 python manage.py makemigrations
@@ -398,7 +391,7 @@ python manage.py makemigrations
 
 ---
 
-## Aplicar migrations
+## Apply Migrations
 
 ```bash
 python manage.py migrate
@@ -406,7 +399,7 @@ python manage.py migrate
 
 ---
 
-## Criar novo superusuário
+## Create Superuser
 
 ```bash
 python manage.py createsuperuser
@@ -414,7 +407,7 @@ python manage.py createsuperuser
 
 ---
 
-## Executar servidor
+## Run Server
 
 ```bash
 python manage.py runserver
@@ -422,41 +415,28 @@ python manage.py runserver
 
 ---
 
-# 🚀 Deploy Futuro
+# 🚀 Future Improvements
 
-O projeto pode futuramente ser hospedado em:
-
-* Render
-* Railway
-* PythonAnywhere
-* VPS Linux
-* Hostinger VPS
-
----
-
-# 🎯 Melhorias Futuras
-
-* API REST
-* Relatórios PDF
-* Controle de usuários
-* Níveis de acesso
-* Sistema de notificações
-* Upload de imagens
-* Integração com WhatsApp
-* Integração com e-mail
-* Controle de fornecedores
-* Controle de caixa
-* Gráficos avançados
-* Deploy em nuvem
+* REST API
+* PDF reports
+* User roles & permissions
+* Notification system
+* Image upload
+* WhatsApp integration
+* Email integration
+* Supplier management
+* Cash flow management
+* Advanced charts
+* Cloud deployment
 
 ---
 
-# 👨‍💻 Desenvolvedor
+# 👨‍💻 Developer
 
-Projeto desenvolvido para fins acadêmicos e aprendizado de desenvolvimento
+Project developed for academic purposes and web development learning using Django.
 
 ---
 
-# 📄 Licença
+# 📄 License
 
-Projeto de uso acadêmico e educacional.
+Educational and academic use project.
