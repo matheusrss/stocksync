@@ -1,0 +1,62 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | StockSync</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/png" href="{% static 'img/loguinho.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="login-page">
+
+    <main class="login-wrapper">
+        <section class="login-card">
+
+            <div class="login-logo-box">
+                <img src="{% static 'img/logo.png' %}" alt="StockSync" class="login-logo">
+            </div>
+
+            <div class="login-header">
+                <h1>Bem-vindo</h1>
+                <p>Acesse sua conta para continuar.</p>
+            </div>
+
+            {% if form.errors %}
+                <div class="login-error">
+                    Usuário ou senha inválidos.
+                </div>
+            {% endif %}
+
+            <form method="post" class="login-form">
+                {% csrf_token %}
+
+                <div class="login-input-group">
+                    <label>Usuário</label>
+                    <div class="login-input-icon">
+                        <i class="bi bi-person-fill"></i>
+                        <input type="text" name="username" required autofocus placeholder="Digite seu usuário">
+                    </div>
+                </div>
+
+                <div class="login-input-group">
+                    <label>Senha</label>
+                    <div class="login-input-icon">
+                        <i class="bi bi-lock-fill"></i>
+                        <input type="password" name="password" required placeholder="Digite sua senha">
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    Entrar
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+
+        </section>
+    </main>
+
+</body>
+</html>
