@@ -1,10 +1,10 @@
-# 📦 StockSync ERP
+# StockSync ERP
 
 A modern ERP web application built with Django for inventory, financial, employee and business management.
 
 ---
 
-# 🚀 Features
+# Features
 
 * Client management
 * Employee management
@@ -20,7 +20,7 @@ A modern ERP web application built with Django for inventory, financial, employe
 
 ---
 
-# 🛠️ Technologies
+# Technologies
 
 ## Backend
 
@@ -43,7 +43,7 @@ A modern ERP web application built with Django for inventory, financial, employe
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 
 ```text id="m85y7q"
 StockSync/
@@ -60,9 +60,9 @@ StockSync/
 
 ---
 
-# ⚙️ Installation Guide
+# Installation Guide
 
-# ✅ 1. Clone Repository
+# 1. Clone Repository
 
 ```bash id="3xk8uq"
 git clone https://github.com/matheusrss/StockSync.git
@@ -70,7 +70,7 @@ git clone https://github.com/matheusrss/StockSync.git
 
 ---
 
-# ✅ 2. Open Project Folder
+# 2. Open Project Folder
 
 ```bash id="fgjwhx"
 cd StockSync
@@ -78,7 +78,7 @@ cd StockSync
 
 ---
 
-# ✅ 3. Create Virtual Environment
+# 3. Create Virtual Environment
 
 ## Windows
 
@@ -94,7 +94,7 @@ python3 -m venv venv
 
 ---
 
-# ✅ 4. Activate Virtual Environment
+# 4. Activate Virtual Environment
 
 ## Windows
 
@@ -110,7 +110,7 @@ source venv/bin/activate
 
 ---
 
-# ✅ 5. Install Dependencies
+# 5. Install Dependencies
 
 ```bash id="3y7p2x"
 pip install -r requirements.txt
@@ -118,7 +118,7 @@ pip install -r requirements.txt
 
 ---
 
-# ⚠️ IMPORTANT
+# IMPORTANT!!!!
 
 This repository does NOT include the SQLite database file.
 
@@ -126,7 +126,7 @@ Because of that, you MUST create the database locally before running the project
 
 ---
 
-# ✅ 6. Create Database
+# 6. Create Database
 
 Run migrations:
 
@@ -138,7 +138,7 @@ This command creates all database tables automatically.
 
 ---
 
-# ✅ 7. Create Superuser
+# 7. Create Superuser
 
 Create an admin account:
 
@@ -154,7 +154,7 @@ Fill:
 
 ---
 
-# ✅ 8. Run Development Server
+# 8. Run Development Server
 
 ```bash id="jlwm1h"
 python manage.py runserver
@@ -162,7 +162,7 @@ python manage.py runserver
 
 ---
 
-# 🌐 Access System
+# Access System
 
 Open in browser:
 
@@ -172,7 +172,7 @@ http://127.0.0.1:8000
 
 ---
 
-# 🔐 Admin Panel
+# Admin Panel
 
 ```text id="p1nrfc"
 http://127.0.0.1:8000/admin
@@ -182,7 +182,7 @@ Use the superuser credentials created previously.
 
 ---
 
-# 📦 Manual Library Installation
+# Manual Library Installation
 
 ## Django
 
@@ -204,7 +204,7 @@ pip install email-validator
 
 ---
 
-# 🔄 Useful Commands
+# Useful Commands
 
 ## Create migrations
 
@@ -238,7 +238,7 @@ python manage.py runserver
 
 ---
 
-# 🚀 Future Improvements
+# Future Improvements
 
 * REST API
 * PDF reports
@@ -250,12 +250,12 @@ python manage.py runserver
 
 ---
 
-# 👨‍💻 Developer
+# Developer
 
 Project developed for academic and educational purposes using Django.
 
 ---
 
-# 📄 License
+# License
 
 Educational and academic use project.
