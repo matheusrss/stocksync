@@ -223,3 +223,39 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const btnLogout = document.getElementById('btnLogout');
+    const logoutModal = document.getElementById('logoutModal');
+    const btnCancelLogout = document.getElementById('btnCancelLogout');
+
+    if (btnLogout && logoutModal) {
+
+        btnLogout.addEventListener('click', function () {
+            logoutModal.classList.add('active');
+        });
+
+    }
+
+    if (btnCancelLogout && logoutModal) {
+
+        btnCancelLogout.addEventListener('click', function () {
+            logoutModal.classList.remove('active');
+        });
+
+    }
+
+    if (logoutModal) {
+
+        logoutModal.addEventListener('click', function (event) {
+
+            if (event.target === logoutModal) {
+                logoutModal.classList.remove('active');
+            }
+
+        });
+
+    }
+
+});

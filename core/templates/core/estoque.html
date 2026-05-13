@@ -69,8 +69,8 @@
                         <td>{{ produto.nome }}</td>
                         <td>{{ produto.categoria.nome|default:"-" }}</td>
                         <td>{{ produto.codigo|default:"-" }}</td>
-                        <td>{{ produto.quantidade_estoque }}</td>
-                        <td>{{ produto.unidade }}</td>
+                        <td>{{ produto.quantidade_estoque|floatformat:0 }}</td>
+                        <td>{{ produto.unidade|floatformat:0 }}</td>
                         <td>R$ {{ produto.preco_custo }}</td>
                         <td>R$ {{ produto.preco_venda }}</td>
                     </tr>

@@ -53,13 +53,6 @@
                     <i class="bi bi-cash-coin"></i>
                     <span>Pagamentos/Recebimentos</span>
                 </a>
-
-                <span class="sidebar-label mt-4">Sistema</span>
-
-                <a href="/admin/" class="sidebar-link">
-                    <i class="bi bi-gear-fill"></i>
-                    <span>Admin Django</span>
-                </a>
             </nav>
 
             <div class="sidebar-footer-card">
@@ -86,9 +79,9 @@
                     <a href="{% url 'dashboard' %}" class="topbar-icon" title="Início">
                         <i class="bi bi-house-door-fill"></i>
                     </a>
-                    <a href="/admin/" class="topbar-icon" title="Configurações">
-                        <i class="bi bi-sliders"></i>
-                    </a>
+                    <button type="button" class="topbar-icon topbar-logout" title="Sair" id="btnLogout">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
                 </div>
             </header>
 
@@ -119,6 +112,43 @@
 <script src="https://unpkg.com/imask"></script>
 <script src="{% static 'js/masks.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
-<script src="{% static 'js/main.js' %}"></script>
+<div class="logout-modal-overlay" id="logoutModal">
+    <div class="logout-modal">
+
+        <div class="logout-modal-icon">
+            <i class="bi bi-box-arrow-right"></i>
+        </div>
+
+        <h2>Deseja realmente sair?</h2>
+
+        <p>
+            Você será redirecionado para a tela de login.
+        </p>
+
+        <div class="logout-modal-actions">
+
+            <button
+                type="button"
+                class="logout-cancel"
+                id="btnCancelLogout"
+            >
+                Cancelar
+            </button>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="logout-confirm"
+                >
+                    Sim, sair
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+</div>
 </body>
 </html>
