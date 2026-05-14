@@ -6,6 +6,22 @@
 {% block content %}
 <section class="dashboard-modern">
     <div class="dashboard-hero">
+        <form method="get" class="dashboard-filter-card">
+    <div>
+        <label>Data inicial</label>
+        <input type="date" name="data_inicio" value="{{ data_inicio }}">
+    </div>
+
+    <div>
+        <label>Data final</label>
+        <input type="date" name="data_fim" value="{{ data_fim }}">
+    </div>
+
+    <button type="submit">
+        <i class="bi bi-funnel-fill"></i>
+        Filtrar relatório
+    </button>
+</form>
         <div>
             <span class="hero-eyebrow">Visão geral</span>
             <h2>Resumo operacional e financeiro</h2>
@@ -50,7 +66,7 @@
         <article class="kpi-card blue">
             <div class="kpi-icon"><i class="bi bi-cart-check-fill"></i></div>
             <div>
-                <span>Vendas do mês</span>
+                <span>Vendas no período</span>
                 <strong>{{ vendas_mes }}</strong>
                 <small>Compras: {{ compras_mes }}</small>
             </div>
@@ -61,14 +77,16 @@
             <div>
                 <span>Valor em estoque</span>
                 <strong>{{ estoque_valor }}</strong>
-                <small>{{ estoque_peso }} em {{ total_produtos }} produtos</small>
+                <small>
+                    {{ estoque_un }} • {{ estoque_kg }}
+                </small>
             </div>
         </article>
     </div>
 
     <div class="mini-kpi-grid">
         <div class="mini-kpi">
-            <span>Lucro estimado</span>
+            <span>Lucro</span>
             <strong>{{ lucro_estimado }}</strong>
             <small>Vendas - compras do mês</small>
         </div>
@@ -83,7 +101,7 @@
             <small>Pendentes/receber atrasadas</small>
         </div>
         <div class="mini-kpi neutral">
-            <span>Movimentações no mês</span>
+            <span>Movimentações</span>
             <strong>{{ total_movimentacoes_mes }}</strong>
             <small>Entradas, saídas, compras e vendas</small>
         </div>
@@ -94,7 +112,7 @@
             <div class="card-head">
                 <div>
                     <h3>Vendas x Compras</h3>
-                    <p>Valores lançados nos últimos 7 dias.</p>
+                    <p>Comparativo de vendas e compras no intervalo selecionado.</p>
                 </div>
             </div>
             <div class="chart-box">

@@ -123,7 +123,7 @@
                     <div class="form-grid">
                         <div class="form-group-custom"><label>Descrição :</label><input type="text" name="descricao" id="editContaDescricao" class="form-control-custom"></div>
                         <div class="form-group-custom"><label>Pessoa / Empresa :</label><select name="fornecedor" id="editContaFornecedor" class="form-control-custom"><option value="">---------</option>{% for pessoa in form.fornecedor.field.queryset %}<option value="{{ pessoa.id }}">{{ pessoa.nome }}</option>{% endfor %}</select></div>
-                        <div class="form-group-custom"><label>Valor :</label><input type="number" step="0.01" name="valor" id="editContaValor" class="form-control-custom"></div>
+                        <div class="form-group-custom"><label>Valor :</label><input type="text" name="valor" id="editContaValor" class="form-control-custom mask-money"></div>
                         <div class="form-group-custom"><label>Vencimento :</label><input type="date" name="vencimento" id="editContaVencimento" class="form-control-custom"></div>
                         <div class="form-group-custom"><label>Status :</label><select name="status" id="editContaStatus" class="form-control-custom"><option value="pendente">Pendente</option><option value="pago">Pago</option><option value="vencido">Vencido</option><option value="cancelado">Cancelado</option><option value="receber">Receber</option></select></div>
                         <div class="form-group-custom"><label>Data Pagamento :</label><input type="date" name="data_pagamento" id="editContaDataPagamento" class="form-control-custom"></div>

@@ -272,6 +272,10 @@ class ProdutoForm(BaseStyledModelForm):
         ]
 
         widgets = {
+
+            'unidade': forms.Select(attrs={
+                'class': 'form-control-custom'
+            }),
             'quantidade_estoque': forms.NumberInput(attrs={
                 'class': 'form-control-custom',
                 'step': '0.01',
@@ -284,16 +288,16 @@ class ProdutoForm(BaseStyledModelForm):
                 'min': '0'
             }),
 
-            'preco_custo': forms.NumberInput(attrs={
-                'class': 'form-control-custom',
-                'step': '0.01',
-                'min': '0'
+            'preco_custo': forms.TextInput(attrs={
+                'class': 'form-control-custom mask-money',
+                'placeholder': 'R$ 0,00',
+                 'value': ''
             }),
 
-            'preco_venda': forms.NumberInput(attrs={
-                'class': 'form-control-custom',
-                'step': '0.01',
-                'min': '0'
+            'preco_venda': forms.TextInput(attrs={
+                'class': 'form-control-custom mask-money',
+                'placeholder': 'R$ 0,00',
+                 'value': ''
             }),
         }
 
@@ -338,11 +342,11 @@ class ContaPagarForm(BaseStyledModelForm):
         ]
 
         widgets = {
-            'valor': forms.NumberInput(attrs={
-                'class': 'form-control-custom',
-                'step': '0.01',
-                'min': '0'
-            }),
+            'valor': forms.TextInput(attrs={
+            'class': 'form-control-custom mask-money',
+            'placeholder': 'R$ 0,00',
+            'value': ''
+        }),
 
             'vencimento': forms.DateInput(attrs={
                 'class': 'form-control-custom',

@@ -53,7 +53,6 @@
     <div class="movement-cadastro-alert">
         <i class="bi bi-info-circle-fill"></i>
         <span>O produto precisa existir no cadastro antes da entrada, saída, compra ou venda.</span>
-        <a href="{% url 'estoque' %}">Ir ao cadastro de produtos</a>
     </div>
 
     <form method="get" class="toolbar-row">
@@ -90,7 +89,13 @@
                                 {{ mov.get_tipo_display }}
                             </span>
                         </td>
-                        <td>{{ mov.quantidade }} {{ mov.produto.unidade }}</td>
+                        <td>
+                            {% if mov.produto.unidade == 'UN' %}
+                                {{ mov.quantidade|floatformat:0 }} {{ mov.produto.unidade }}
+                            {% else %}
+                                {{ mov.quantidade|floatformat:2 }} {{ mov.produto.unidade }}
+                            {% endif %}
+                        </td>
                         <td>{{ mov.observacao|default:"-" }}</td>
                         <td>{{ mov.data|date:"d/m/Y H:i" }}</td>
                     </tr>

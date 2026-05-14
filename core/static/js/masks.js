@@ -104,3 +104,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.mask-money').forEach((campo) => {
+        IMask(campo, {
+            mask: Number,
+            scale: 2,
+            signed: false,
+            thousandsSeparator: '.',
+            radix: ',',
+            mapToRadix: ['.'],
+            normalizeZeros: true,
+            padFractionalZeros: false
+        });
+
+        if (campo.value === '0' || campo.value === '0,00' || campo.value === '0.00') {
+            campo.value = '';
+        }
+    });
+});

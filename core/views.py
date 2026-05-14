@@ -35,11 +35,21 @@ def form_errors_text(form):
 
 
 def decimal_from_request(value):
-    try:
-        return Decimal(str(value or '0').replace(',', '.'))
-    except Exception:
+    if not value:
         return Decimal('0')
 
+    value = (
+        str(value)
+        .replace('R$', '')
+        .replace('.', '')
+        .replace(',', '.')
+        .strip()
+    )
+
+    try:
+        return Decimal(value)
+    except Exception:
+        return Decimal('0')
 
 def buscar_produto(produto_id=None, produto_busca=''):
     produto = None
@@ -89,9 +99,28 @@ def atualizar_vencidos():
 @login_required
 def dashboard(request):
     atualizar_vencidos()
+
     hoje = timezone.localdate()
-    inicio_mes = hoje.replace(day=1)
-    fim_mes = hoje.replace(day=monthrange(hoje.year, hoje.month)[1])
+
+    data_inicio_str = request.GET.get('data_inicio')
+    data_fim_str = request.GET.get('data_fim')
+
+    if data_inicio_str and data_fim_str:
+        data_inicio = timezone.datetime.strptime(
+            data_inicio_str,
+            '%Y-%m-%d'
+        ).date()
+
+        data_fim = timezone.datetime.strptime(
+            data_fim_str,
+            '%Y-%m-%d'
+        ).date()
+    else:
+        data_fim = hoje
+        data_inicio = hoje - timedelta(days=6)
+
+    inicio_mes = data_inicio
+    fim_mes = data_fim
     proximos_7_dias = hoje + timedelta(days=7)
 
     valor_total_expr = ExpressionWrapper(
@@ -102,10 +131,27 @@ def dashboard(request):
     produtos_ativos = Produto.objects.filter(ativo=True)
     contas_ativas = ContaPagar.objects.exclude(status='cancelado')
 
-    pagar_hoje = contas_ativas.filter(vencimento=hoje, status='pendente').aggregate(total=Sum('valor'))['total'] or Decimal('0')
-    pagar_mes = contas_ativas.filter(vencimento__gte=inicio_mes, vencimento__lte=fim_mes, status='pendente').aggregate(total=Sum('valor'))['total'] or Decimal('0')
-    receber_hoje = contas_ativas.filter(vencimento=hoje, status='receber').aggregate(total=Sum('valor'))['total'] or Decimal('0')
-    receber_mes = contas_ativas.filter(vencimento__gte=inicio_mes, vencimento__lte=fim_mes, status='receber').aggregate(total=Sum('valor'))['total'] or Decimal('0')
+    pagar_hoje = contas_ativas.filter(
+        vencimento=hoje,
+        status='pendente'
+    ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
+
+    pagar_mes = contas_ativas.filter(
+        vencimento__gte=inicio_mes,
+        vencimento__lte=fim_mes,
+        status='pendente'
+    ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
+
+    receber_hoje = contas_ativas.filter(
+        vencimento=hoje,
+        status='receber'
+    ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
+
+    receber_mes = contas_ativas.filter(
+        vencimento__gte=inicio_mes,
+        vencimento__lte=fim_mes,
+        status='receber'
+    ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
 
     vendas_mes = ContaPagar.objects.filter(
         descricao__icontains='Venda',
@@ -126,75 +172,159 @@ def dashboard(request):
     ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
 
     lucro_estimado = vendas_mes - compras_mes
-    estoque_valor = produtos_ativos.aggregate(total=Sum(valor_total_expr))['total'] or Decimal('0')
-    estoque_qtd = produtos_ativos.aggregate(total=Sum('quantidade_estoque'))['total'] or Decimal('0')
 
-    produtos_baixo = produtos_ativos.filter(quantidade_estoque__lte=F('estoque_minimo')).order_by('quantidade_estoque')
+    estoque_valor = produtos_ativos.aggregate(
+        total=Sum(valor_total_expr)
+    )['total'] or Decimal('0')
+
+    estoque_qtd = produtos_ativos.aggregate(
+        total=Sum('quantidade_estoque')
+    )['total'] or Decimal('0')
+
+    estoque_un = produtos_ativos.filter(
+        unidade='UN'
+    ).aggregate(
+        total=Sum('quantidade_estoque')
+    )['total'] or Decimal('0')
+
+    estoque_kg = produtos_ativos.filter(
+        unidade='KG'
+    ).aggregate(
+        total=Sum('quantidade_estoque')
+    )['total'] or Decimal('0')
+
+    produtos_baixo = produtos_ativos.filter(
+        quantidade_estoque__lte=F('estoque_minimo')
+    ).order_by('quantidade_estoque')
+
     contas_vencidas = contas_ativas.filter(
         status__in=['pendente', 'receber', 'vencido'],
         vencimento__lt=hoje,
     ).order_by('vencimento')
+
     proximos_vencimentos = contas_ativas.filter(
         status__in=['pendente', 'receber'],
         vencimento__gte=hoje,
         vencimento__lte=proximos_7_dias,
     ).order_by('vencimento')[:6]
 
-    ultimas_movimentacoes = MovimentacaoEstoque.objects.select_related('produto').all()[:8]
-    produtos_destaque = produtos_ativos.order_by('-quantidade_estoque')[:5]
+    ultimas_movimentacoes = MovimentacaoEstoque.objects.select_related(
+        'produto'
+    ).all()[:8]
+
+    produtos_destaque = produtos_ativos.order_by(
+        '-quantidade_estoque'
+    )[:5]
 
     labels_7_dias = []
     vendas_7_dias = []
     compras_7_dias = []
-    for i in range(6, -1, -1):
-        dia = hoje - timedelta(days=i)
+
+    total_dias = (data_fim - data_inicio).days + 1
+
+    for i in range(total_dias):
+        dia = data_inicio + timedelta(days=i)
+
         labels_7_dias.append(dia.strftime('%d/%m'))
+
         vendas_dia = ContaPagar.objects.filter(
             descricao__icontains='Venda',
             criado_em__date=dia,
-        ).exclude(status='cancelado').aggregate(total=Sum('valor'))['total'] or Decimal('0')
+        ).exclude(status='cancelado').aggregate(
+            total=Sum('valor')
+        )['total'] or Decimal('0')
+
         compras_dia = ContaPagar.objects.filter(
             descricao__icontains='Compra',
             criado_em__date=dia,
-        ).exclude(status='cancelado').aggregate(total=Sum('valor'))['total'] or Decimal('0')
+        ).exclude(status='cancelado').aggregate(
+            total=Sum('valor')
+        )['total'] or Decimal('0')
+
         vendas_7_dias.append(float(vendas_dia))
         compras_7_dias.append(float(compras_dia))
 
-    status_labels = ['Receber', 'Pendente', 'Pago', 'Vencido', 'Cancelado']
-    status_keys = ['receber', 'pendente', 'pago', 'vencido', 'cancelado']
+    status_labels = [
+        'Receber',
+        'Pendente',
+        'Pago',
+        'Vencido',
+        'Cancelado'
+    ]
+
+    status_keys = [
+        'receber',
+        'pendente',
+        'pago',
+        'vencido',
+        'cancelado'
+    ]
+
     status_values = []
+
     for status in status_keys:
-        total = ContaPagar.objects.filter(status=status).aggregate(total=Sum('valor'))['total'] or Decimal('0')
+        total = ContaPagar.objects.filter(
+            status=status
+        ).aggregate(total=Sum('valor'))['total'] or Decimal('0')
+
         status_values.append(float(total))
 
     contexto = {
+        'data_inicio': data_inicio.strftime('%Y-%m-%d'),
+        'data_fim': data_fim.strftime('%Y-%m-%d'),
+
         'receber_hoje': moeda(receber_hoje),
         'receber_mes': moeda(receber_mes),
+
         'pagar_hoje': moeda(pagar_hoje),
         'pagar_mes': moeda(pagar_mes),
+
         'vendas_mes': moeda(vendas_mes),
         'compras_mes': moeda(compras_mes),
         'pagos_mes': moeda(pagos_mes),
+
         'lucro_estimado': moeda(lucro_estimado),
+
         'estoque_peso': f'{numero_br(estoque_qtd)} un.',
         'estoque_valor': moeda(estoque_valor),
+
+        'estoque_un': f'{numero_br(estoque_un)} UN',
+        'estoque_kg': f'{estoque_kg:.2f}'.replace('.', ',') + ' KG',
+
         'total_produtos': produtos_ativos.count(),
-        'total_clientes': Cliente.objects.filter(ativo=True, funcao__in=['cliente', 'ambos']).count(),
-        'total_funcionarios': Funcionario.objects.filter(ativo=True).count(),
+
+        'total_clientes': Cliente.objects.filter(
+            ativo=True,
+            funcao__in=['cliente', 'ambos']
+        ).count(),
+
+        'total_funcionarios': Funcionario.objects.filter(
+            ativo=True
+        ).count(),
+
         'total_estoque_baixo': produtos_baixo.count(),
         'total_contas_vencidas': contas_vencidas.count(),
-        'total_movimentacoes_mes': MovimentacaoEstoque.objects.filter(data__date__gte=inicio_mes, data__date__lte=fim_mes).count(),
+
+        'total_movimentacoes_mes': MovimentacaoEstoque.objects.filter(
+            data__date__gte=inicio_mes,
+            data__date__lte=fim_mes
+        ).count(),
+
         'produtos_baixo': produtos_baixo[:6],
         'contas_vencidas': contas_vencidas[:6],
         'proximos_vencimentos': proximos_vencimentos,
+
         'ultimas_movimentacoes': ultimas_movimentacoes,
         'produtos_destaque': produtos_destaque,
+
         'chart_labels': json.dumps(labels_7_dias),
         'chart_vendas': json.dumps(vendas_7_dias),
         'chart_compras': json.dumps(compras_7_dias),
+
         'chart_status_labels': json.dumps(status_labels),
         'chart_status_values': json.dumps(status_values),
     }
+
     return render(request, 'core/dashboard.html', contexto)
 
 
@@ -515,3 +645,5 @@ def excluir_conta_pagar(request, id):
         conta.delete()
 
     return redirect('contas_pagar')
+
+

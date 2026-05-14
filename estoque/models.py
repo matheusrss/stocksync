@@ -17,10 +17,21 @@ class Categoria(models.Model):
 
 
 class Produto(models.Model):
+    UNIDADE_CHOICES = (
+        ('UN', 'UN - Unidade'),
+        ('KG', 'KG - Quilograma'),
+    )
+
     nome = models.CharField(max_length=150)
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='produtos')
     codigo = models.CharField(max_length=50, unique=True, blank=True, null=True)
-    unidade = models.CharField(max_length=20, default='UN')
+
+    unidade = models.CharField(
+        max_length=2,
+        choices=UNIDADE_CHOICES,
+        default='UN'
+    )
+
     preco_custo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     preco_venda = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     quantidade_estoque = models.DecimalField(max_digits=10, decimal_places=2, default=0)
