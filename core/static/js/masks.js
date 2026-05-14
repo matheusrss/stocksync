@@ -54,3 +54,53 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const cepInputs = document.querySelectorAll('input[name="cep"]');
+
+    cepInputs.forEach((cepInput) => {
+        let ultimoCepBuscado = '';
+
+        cepInput.addEventListener('input', async function () {
+            const cep = this.value.replace(/\D/g, '');
+
+            if (cep.length !== 8) {
+                ultimoCepBuscado = '';
+                return;
+            }
+
+            if (cep === ultimoCepBuscado) {
+                return;
+            }
+
+            ultimoCepBuscado = cep;
+
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+
+                if (data.erro) {
+                    alert('CEP não encontrado.');
+                    return;
+                }
+
+                const form = cepInput.closest('form');
+
+                if (!form) return;
+
+                const rua = form.querySelector('input[name="rua"]');
+                const bairro = form.querySelector('input[name="bairro"]');
+                const cidade = form.querySelector('input[name="cidade"]');
+                const uf = form.querySelector('input[name="uf"]');
+
+                if (rua) rua.value = data.logradouro || '';
+                if (bairro) bairro.value = data.bairro || '';
+                if (cidade) cidade.value = data.localidade || '';
+                if (uf) uf.value = data.uf || '';
+
+            } catch (error) {
+                alert('Erro ao buscar CEP. Verifique sua conexão.');
+            }
+        });
+    });
+});

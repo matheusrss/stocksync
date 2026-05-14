@@ -250,11 +250,11 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const chartLabels = {{ chart_labels|safe }};
-    const chartVendas = {{ chart_vendas|safe }};
-    const chartCompras = {{ chart_compras|safe }};
-    const chartStatusLabels = {{ chart_status_labels|safe }};
-    const chartStatusValues = {{ chart_status_values|safe }};
+    const chartLabels = JSON.parse('{{ chart_labels|escapejs }}');
+    const chartVendas = JSON.parse('{{ chart_vendas|escapejs }}');
+    const chartCompras = JSON.parse('{{ chart_compras|escapejs }}');
+    const chartStatusLabels = JSON.parse('{{ chart_status_labels|escapejs }}');
+    const chartStatusValues = JSON.parse('{{ chart_status_values|escapejs }}');
 
     const moneyFormatter = new Intl.NumberFormat('pt-BR', {
         style: 'currency',
