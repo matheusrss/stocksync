@@ -419,7 +419,6 @@ def estoque(request):
 def novo_produto(request):
     if request.method != 'POST':
         return redirect('estoque')
-
     form = ProdutoForm(request.POST)
     if form.is_valid():
         form.save()
@@ -609,13 +608,11 @@ def excluir_cadastro(request, tipo, id):
 def editar_produto(request, id):
     produto = get_object_or_404(Produto, id=id)
     form = ProdutoForm(request.POST or None, instance=produto)
-
     if request.method == 'POST' and form.is_valid():
         form.save()
+        messages.success(request, 'Produto atualizado com sucesso!')
         return redirect('estoque')
-
     return redirect('estoque')
-
 
 @login_required
 def excluir_produto(request, id):

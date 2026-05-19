@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
             signed: false,
             thousandsSeparator: '.',
             radix: ',',
-            mapToRadix: ['.'],
+            mapToRadix: ['.', ','],
             normalizeZeros: true,
             padFractionalZeros: false
         });
@@ -122,4 +122,37 @@ document.addEventListener('DOMContentLoaded', function () {
             campo.value = '';
         }
     });
+});
+
+// Aplicar mask em campos adicionados dinamicamente (modais)
+document.addEventListener('DOMContentLoaded', function () { 
+  // Função para aplicar mask de moeda
+  function aplicarMaskMoney(campo) {
+    if(!campo) return;
+    
+    IMask(campo, { 
+      mask: Number, 
+      scale: 2, 
+      signed: false, 
+      thousandsSeparator: '.', 
+      radix: ',', 
+      mapToRadix: ['.', ','],
+      normalizeZeros: true, 
+      padFractionalZeros: false 
+    }); 
+    
+    if (campo.value === '0' || campo.value === '0,00' || campo.value === '0.00') { 
+      campo.value = ''; 
+    }
+  }
+
+  // Aplicar no carregamento da página
+  document.querySelectorAll('.mask-money').forEach(aplicarMaskMoney);
+  
+  // Reaplicar quando o modal de editar é aberto
+  document.getElementById('modalEditarProduto')?.addEventListener('show.bs.modal', function() {
+    document.getElementById('editProdutoPrecoCusto')?.querySelectorAll?.('input').forEach(aplicarMaskMoney);
+    aplicarMaskMoney(document.getElementById('editProdutoPrecoCusto'));
+    aplicarMaskMoney(document.getElementById('editProdutoPrecoVenda'));
+  });
 });

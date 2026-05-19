@@ -245,21 +245,37 @@ class FuncionarioForm(BaseStyledModelForm):
             )
 
 class ProdutoForm(BaseStyledModelForm):
-
     categoria_nome = forms.CharField(
         label='Categoria',
         max_length=100,
         required=False,
-
         widget=forms.TextInput(attrs={
             'class': 'form-control-custom',
             'placeholder': 'Ex.: Sucata'
         })
     )
+    
+    # Definir os preços como CharField (aceita qualquer texto)
+    preco_custo = forms.CharField(
+        label='Preço de Custo',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control-custom mask-money',
+            'placeholder': 'R$ 0,00'
+        })
+    )
+    
+    preco_venda = forms.CharField(
+        label='Preço de Venda',
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control-custom mask-money',
+            'placeholder': 'R$ 0,00'
+        })
+    )
 
     class Meta:
         model = Produto
-
         fields = [
             'nome',
             'codigo',
@@ -270,59 +286,74 @@ class ProdutoForm(BaseStyledModelForm):
             'preco_custo',
             'preco_venda',
         ]
-
         widgets = {
-
-            'unidade': forms.Select(attrs={
-                'class': 'form-control-custom'
-            }),
+            'nome': forms.TextInput(attrs={'class': 'form-control-custom'}),
+            'codigo': forms.TextInput(attrs={'class': 'form-control-custom'}),
+            'unidade': forms.Select(attrs={'class': 'form-control-custom'}),
             'quantidade_estoque': forms.NumberInput(attrs={
                 'class': 'form-control-custom',
                 'step': '0.01',
                 'min': '0'
             }),
-
             'estoque_minimo': forms.NumberInput(attrs={
                 'class': 'form-control-custom',
                 'step': '0.01',
                 'min': '0'
             }),
-
-            'preco_custo': forms.TextInput(attrs={
-                'class': 'form-control-custom mask-money',
-                'placeholder': 'R$ 0,00',
-                 'value': ''
-            }),
-
-            'preco_venda': forms.TextInput(attrs={
-                'class': 'form-control-custom mask-money',
-                'placeholder': 'R$ 0,00',
-                 'value': ''
-            }),
         }
+
+    def clean_preco_custo(self):
+        valor = self.cleaned_data.get('preco_custo', '')
+        if not valor or valor.strip() == '':
+            return None
+        
+        try:
+            # Limpar: remover "R$", espaços, e converter formato brasileiro
+            valor_limpo = valor.replace('R$', '').strip()
+            valor_limpo = valor_limpo.replace('.', '').replace(',', '.')
+            from decimal import Decimal
+            return Decimal(valor_limpo)
+        except Exception as e:
+            raise forms.ValidationError('Preço de custo inválido. Use o formato: 5,55')
+
+    def clean_preco_venda(self):
+        valor = self.cleaned_data.get('preco_venda', '')
+        if not valor or valor.strip() == '':
+            return None
+        
+        try:
+            # Limpar: remover "R$", espaços, e converter formato brasileiro
+            valor_limpo = valor.replace('R$', '').strip()
+            valor_limpo = valor_limpo.replace('.', '').replace(',', '.')
+            from decimal import Decimal
+            return Decimal(valor_limpo)
+        except Exception as e:
+            raise forms.ValidationError('Preço de venda inválido. Use o formato: 5,55')
 
     def save(self, commit=True):
         produto = super().save(commit=False)
-
+        
+        # Garantir que os preços estão como Decimal
+        if self.cleaned_data.get('preco_custo'):
+            produto.preco_custo = self.cleaned_data['preco_custo']
+        if self.cleaned_data.get('preco_venda'):
+            produto.preco_venda = self.cleaned_data['preco_venda']
+        
+        # Salvar categoria
         categoria_nome = self.cleaned_data.get('categoria_nome')
-
         if categoria_nome:
             categoria, _ = Categoria.objects.get_or_create(
                 nome=categoria_nome.strip()
             )
-
             produto.categoria = categoria
-
         elif not produto.categoria_id:
             categoria, _ = Categoria.objects.get_or_create(
                 nome='Geral'
             )
-
             produto.categoria = categoria
-
+        
         if commit:
             produto.save()
-
         return produto
 
 
