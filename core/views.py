@@ -460,12 +460,25 @@ def nova_conta_pagar(request):
 @login_required
 def movimentacoes_estoque(request):
     busca = request.GET.get('busca', '').strip()
-    produtos = Produto.objects.select_related('categoria').filter(ativo=True).order_by('nome')
-    pessoas = Cliente.objects.filter(ativo=True).order_by('nome')
-    movimentacoes = MovimentacaoEstoque.objects.select_related('produto', 'produto__categoria').all()[:100]
+
+    produtos = Produto.objects.select_related('categoria').filter(
+        ativo=True
+    ).order_by('nome')
+
+    pessoas = Cliente.objects.filter(
+        ativo=True
+    ).order_by('nome')
+
+    movimentacoes = MovimentacaoEstoque.objects.select_related(
+        'produto',
+        'produto__categoria'
+    ).all()[:100]
 
     if busca:
-        movimentacoes = MovimentacaoEstoque.objects.select_related('produto', 'produto__categoria').filter(
+        movimentacoes = MovimentacaoEstoque.objects.select_related(
+            'produto',
+            'produto__categoria'
+        ).filter(
             Q(produto__nome__icontains=busca) |
             Q(tipo__icontains=busca) |
             Q(observacao__icontains=busca)
@@ -473,13 +486,17 @@ def movimentacoes_estoque(request):
 
     if request.method == 'POST':
         operacao = request.POST.get('operacao')
+
         produto = buscar_produto(
             produto_id=request.POST.get('produto'),
             produto_busca=request.POST.get('produto_busca', ''),
         )
 
         if not produto:
-            messages.error(request, 'Produto não cadastrado. Cadastre o produto antes de movimentar, comprar ou vender.')
+            messages.error(
+                request,
+                'Produto não cadastrado. Cadastre o produto antes de movimentar, comprar ou vender.'
+            )
             return redirect('movimentacoes_estoque')
 
         quantidade = decimal_from_request(request.POST.get('quantidade'))
@@ -487,12 +504,30 @@ def movimentacoes_estoque(request):
 
         try:
             if operacao == 'entrada':
-                registrar_movimentacao(produto, 'entrada', quantidade, observacao or 'Entrada manual de estoque')
-                messages.success(request, 'Entrada registrada com sucesso. As unidades foram adicionadas ao estoque.')
+                registrar_movimentacao(
+                    produto,
+                    'entrada',
+                    quantidade,
+                    observacao or 'Entrada manual de estoque'
+                )
+
+                messages.success(
+                    request,
+                    'Entrada registrada com sucesso. As unidades foram adicionadas ao estoque.'
+                )
 
             elif operacao == 'saida':
-                registrar_movimentacao(produto, 'saida', quantidade, observacao or 'Saída manual de estoque')
-                messages.success(request, 'Saída registrada com sucesso. As unidades foram retiradas do estoque.')
+                registrar_movimentacao(
+                    produto,
+                    'saida',
+                    quantidade,
+                    observacao or 'Saída manual de estoque'
+                )
+
+                messages.success(
+                    request,
+                    'Saída registrada com sucesso. As unidades foram retiradas do estoque.'
+                )
 
             elif operacao == 'compra':
                 valor = decimal_from_request(request.POST.get('valor'))
@@ -500,17 +535,31 @@ def movimentacoes_estoque(request):
                 status = request.POST.get('status') or 'pendente'
                 data_pagamento = request.POST.get('data_pagamento') or None
                 fornecedor_id = request.POST.get('pessoa')
-                fornecedor = Cliente.objects.filter(id=fornecedor_id, ativo=True).first() if fornecedor_id else None
+
+                fornecedor = Cliente.objects.filter(
+                    id=fornecedor_id,
+                    ativo=True
+                ).first() if fornecedor_id else None
 
                 if valor <= 0:
-                    messages.error(request, 'Informe um valor válido para a compra.')
+                    messages.error(
+                        request,
+                        'Informe um valor válido para a compra.'
+                    )
                     return redirect('movimentacoes_estoque')
 
                 if status not in ['pendente', 'pago']:
                     status = 'pendente'
 
-                registrar_movimentacao(produto, 'compra', quantidade, observacao or 'Compra de produto')
+                movimentacao = registrar_movimentacao(
+                    produto,
+                    'compra',
+                    quantidade,
+                    observacao or 'Compra de produto'
+                )
+
                 ContaPagar.objects.create(
+                    movimentacao=movimentacao,
                     descricao=f'Compra - {produto.nome}',
                     fornecedor=fornecedor,
                     valor=valor,
@@ -519,24 +568,42 @@ def movimentacoes_estoque(request):
                     data_pagamento=data_pagamento if status == 'pago' else None,
                     observacao=observacao,
                 )
-                messages.success(request, 'Compra registrada. O estoque foi atualizado e o pagamento foi lançado em Pagamentos e Recebimentos.')
+
+                messages.success(
+                    request,
+                    'Compra registrada. O estoque foi atualizado e o pagamento foi lançado em Pagamentos e Recebimentos.'
+                )
 
             elif operacao == 'venda':
                 valor = decimal_from_request(request.POST.get('valor'))
                 vencimento = request.POST.get('vencimento') or timezone.localdate()
                 status = request.POST.get('status') or 'receber'
                 cliente_id = request.POST.get('pessoa')
-                cliente = Cliente.objects.filter(id=cliente_id, ativo=True).first() if cliente_id else None
+
+                cliente = Cliente.objects.filter(
+                    id=cliente_id,
+                    ativo=True
+                ).first() if cliente_id else None
 
                 if valor <= 0:
-                    messages.error(request, 'Informe um valor válido para a venda.')
+                    messages.error(
+                        request,
+                        'Informe um valor válido para a venda.'
+                    )
                     return redirect('movimentacoes_estoque')
 
                 if status not in ['receber', 'pago']:
                     status = 'receber'
 
-                registrar_movimentacao(produto, 'venda', quantidade, observacao or 'Venda de produto')
+                movimentacao = registrar_movimentacao(
+                    produto,
+                    'venda',
+                    quantidade,
+                    observacao or 'Venda de produto'
+                )
+
                 ContaPagar.objects.create(
+                    movimentacao=movimentacao,
                     descricao=f'Venda - {produto.nome}',
                     fornecedor=cliente,
                     valor=valor,
@@ -547,9 +614,15 @@ def movimentacoes_estoque(request):
                 )
 
                 if status == 'pago':
-                    messages.success(request, 'Venda registrada como paga. O estoque foi atualizado e o pagamento entrou em Pagamentos e Recebimentos.')
+                    messages.success(
+                        request,
+                        'Venda registrada como paga. O estoque foi atualizado e o pagamento entrou em Pagamentos e Recebimentos.'
+                    )
                 else:
-                    messages.success(request, 'Venda registrada como receber. O estoque foi atualizado e o recebimento foi lançado em Pagamentos e Recebimentos.')
+                    messages.success(
+                        request,
+                        'Venda registrada como receber. O estoque foi atualizado e o recebimento foi lançado em Pagamentos e Recebimentos.'
+                    )
 
             else:
                 messages.error(request, 'Operação inválida.')
@@ -617,8 +690,11 @@ def editar_produto(request, id):
 def excluir_produto(request, id):
     if request.method == 'POST':
         produto = get_object_or_404(Produto, id=id)
+
+        produto.ativo = False
+        produto.save()
+
         messages.success(request, 'Produto retirado com sucesso!')
-        produto.delete()
 
     return redirect('estoque')
 

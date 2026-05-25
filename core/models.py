@@ -111,6 +111,12 @@ class ContaPagar(models.Model):
         ('cancelado', 'Cancelado'),
         ('receber', 'Receber'),
     )
+    movimentacao = models.ForeignKey(
+    'estoque.MovimentacaoEstoque',
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True
+)
 
     descricao = models.CharField(max_length=150)
     fornecedor = models.ForeignKey(
