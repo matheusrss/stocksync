@@ -618,6 +618,7 @@ def editar_produto(request, id):
 def excluir_produto(request, id):
     if request.method == 'POST':
         produto = get_object_or_404(Produto, id=id)
+        messages.success(request, 'Produto retirado com sucesso!')
         produto.delete()
 
     return redirect('estoque')
