@@ -70,7 +70,6 @@
                 <tr>
                     <th class="id-col">ID</th>
                     <th>Produto</th>
-                    <th>Código</th>
                     <th>Tipo</th>
                     <th>Quantidade</th>
                     <th>Observação</th>
@@ -83,7 +82,6 @@
                     <tr>
                         <td>{{ mov.id }}</td>
                         <td>{{ mov.produto.nome }}</td>
-                        <td>{{ mov.produto.codigo|default:"-" }}</td>
                         <td>
                             <span class="movement-badge badge-{{ mov.tipo }}">
                                 {{ mov.get_tipo_display }}

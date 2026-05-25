@@ -278,7 +278,6 @@ class ProdutoForm(BaseStyledModelForm):
         model = Produto
         fields = [
             'nome',
-            'codigo',
             'categoria_nome',
             'unidade',
             'quantidade_estoque',
@@ -288,7 +287,6 @@ class ProdutoForm(BaseStyledModelForm):
         ]
         widgets = {
             'nome': forms.TextInput(attrs={'class': 'form-control-custom'}),
-            'codigo': forms.TextInput(attrs={'class': 'form-control-custom'}),
             'unidade': forms.Select(attrs={'class': 'form-control-custom'}),
             'quantidade_estoque': forms.NumberInput(attrs={
                 'class': 'form-control-custom',

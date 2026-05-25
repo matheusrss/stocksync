@@ -24,7 +24,6 @@ class Produto(models.Model):
 
     nome = models.CharField(max_length=150)
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='produtos')
-    codigo = models.CharField(max_length=50, unique=True, blank=True, null=True)
 
     unidade = models.CharField(
         max_length=2,

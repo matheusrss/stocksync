@@ -60,13 +60,13 @@ def buscar_produto(produto_id=None, produto_busca=''):
 
     if not produto and produto_busca:
         produto = Produto.objects.filter(
-            Q(nome__iexact=produto_busca) | Q(codigo__iexact=produto_busca),
+            Q(nome__iexact=produto_busca),
             ativo=True,
         ).first()
 
     if not produto and produto_busca:
         produto = Produto.objects.filter(
-            Q(nome__icontains=produto_busca) | Q(codigo__icontains=produto_busca),
+            Q(nome__icontains=produto_busca), 
             ativo=True,
         ).first()
 
@@ -406,7 +406,7 @@ def estoque(request):
     produtos = Produto.objects.select_related('categoria').filter(ativo=True)
     busca = request.GET.get('busca', '').strip()
     if busca:
-        produtos = produtos.filter(Q(nome__icontains=busca) | Q(codigo__icontains=busca) | Q(categoria__nome__icontains=busca))
+        produtos = produtos.filter(Q(nome__icontains=busca) | Q(categoria__nome__icontains=busca))
 
     return render(request, 'core/estoque.html', {
         'produtos': produtos,
@@ -467,7 +467,6 @@ def movimentacoes_estoque(request):
     if busca:
         movimentacoes = MovimentacaoEstoque.objects.select_related('produto', 'produto__categoria').filter(
             Q(produto__nome__icontains=busca) |
-            Q(produto__codigo__icontains=busca) |
             Q(tipo__icontains=busca) |
             Q(observacao__icontains=busca)
         )[:100]
