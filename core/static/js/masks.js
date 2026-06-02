@@ -105,54 +105,47 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+// Aplicar máscara de dinheiro em campos adicionados dinamicamente
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.mask-money').forEach((campo) => {
-        IMask(campo, {
-            mask: Number,
-            scale: 2,
-            signed: false,
-            thousandsSeparator: '.',
-            radix: ',',
-            mapToRadix: ['.', ','],
-            normalizeZeros: true,
-            padFractionalZeros: false
-        });
+
+    function formatarMoeda(valor) {
+        let numeros = String(valor).replace(/\D/g, '');
+
+        if (!numeros) return '';
+
+        numeros = numeros.slice(0, 11);
+
+        const numero = (Number(numeros) / 100).toFixed(2);
+
+        return numero
+            .replace('.', ',')
+            .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function aplicarMaskMoney(campo) {
+        if (!campo) return;
+
+        if (campo.dataset.moneyMaskApplied === 'true') {
+            return;
+        }
+
+        campo.dataset.moneyMaskApplied = 'true';
 
         if (campo.value === '0' || campo.value === '0,00' || campo.value === '0.00') {
             campo.value = '';
         }
-    });
-});
 
-// Aplicar mask em campos adicionados dinamicamente (modais)
-document.addEventListener('DOMContentLoaded', function () { 
-  // Função para aplicar mask de moeda
-  function aplicarMaskMoney(campo) {
-    if(!campo) return;
-    
-    IMask(campo, { 
-      mask: Number, 
-      scale: 2, 
-      signed: false, 
-      thousandsSeparator: '.', 
-      radix: ',', 
-      mapToRadix: ['.', ','],
-      normalizeZeros: true, 
-      padFractionalZeros: false 
-    }); 
-    
-    if (campo.value === '0' || campo.value === '0,00' || campo.value === '0.00') { 
-      campo.value = ''; 
+        campo.addEventListener('input', function () {
+            campo.value = formatarMoeda(campo.value);
+            campo.setSelectionRange(campo.value.length, campo.value.length);
+        });
     }
-  }
 
-  // Aplicar no carregamento da página
-  document.querySelectorAll('.mask-money').forEach(aplicarMaskMoney);
-  
-  // Reaplicar quando o modal de editar é aberto
-  document.getElementById('modalEditarProduto')?.addEventListener('show.bs.modal', function() {
-    document.getElementById('editProdutoPrecoCusto')?.querySelectorAll?.('input').forEach(aplicarMaskMoney);
-    aplicarMaskMoney(document.getElementById('editProdutoPrecoCusto'));
-    aplicarMaskMoney(document.getElementById('editProdutoPrecoVenda'));
-  });
+    document.querySelectorAll('.mask-money').forEach(aplicarMaskMoney);
+
+    document.querySelectorAll('.modal').forEach((modal) => {
+        modal.addEventListener('shown.bs.modal', function () {
+            modal.querySelectorAll('.mask-money').forEach(aplicarMaskMoney);
+        });
+    });
 });
